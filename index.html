@@ -577,7 +577,7 @@ async function renderList(){
       </div>
       <div style="display:flex;gap:5px;flex-shrink:0">
         <button onclick="loadAndEdit('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">수정</button>
-        <button onclick="viewContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">PDF</button>
+        <button onclick="viewContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">${/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)?'저장':'PDF'}</button>
         <button onclick="deleteContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid #fdecea;background:#fff;color:#c0392b;cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">삭제</button>
       </div>
     </div>`;
