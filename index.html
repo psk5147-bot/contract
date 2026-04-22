@@ -877,13 +877,23 @@ async function generatePDF(save=false){
 
   const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if(isMobile){
-    // 모바일: PNG로 바로 다운로드
-    const a=document.createElement('a');
-    a.href=imgData;
-    a.download=fileName+'.png';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // 모바일: 새 탭에서 이미지 열기 → 꾹 누르면 저장 가능
+    const win=window.open('','_blank');
+    if(win){
+      win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${fileName}</title>
+      <style>*{margin:0;padding:0}body{background:#000;display:flex;flex-direction:column;align-items:center}
+      img{width:100%;max-width:800px;display:block}
+      .tip{color:#fff;font-size:13px;padding:12px;text-align:center;font-family:sans-serif;background:#1a1a2e;width:100%}
+      </style></head><body>
+      <div class="tip">📥 이미지를 꾹 눌러서 저장하세요</div>
+      <img src="${imgData}"/>
+      </body></html>`);
+      win.document.close();
+    } else {
+      // 팝업 차단 시 현재 탭에서 이미지 열기
+      const w=window.open(imgData,'_blank');
+      if(!w) location.href=imgData;
+    }
   } else {
     // 데스크탑: 인쇄 창 열기
     const blob=new Blob([html],{type:'text/html'});
