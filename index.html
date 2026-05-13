@@ -177,7 +177,7 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
       <div class="field"><label>잔금 (자동)</label><input id="balance" readonly/></div>
     </div>
     <div class="field"><label>잔금 지급 시기</label>
-      <select id="btiming"><option>상차 후 출발 전</option><option>출고 1일 전</option><option>납품 후 즉시</option><option>계약 당일</option><option>별도 협의</option></select>
+      <select id="btiming"><option>상차 후 출발 전</option><option>출고 1일 전</option><option>납품 후 즉시</option><option>계약 당일</option><option>귀사 결재 조건</option><option>별도 협의</option></select>
     </div>
   </div>
   <div class="brow"><button class="btn btn-outline" onclick="go(2)">← 이전</button><button class="btn btn-next btn-outline" onclick="go(4)">다음 →</button></div>
@@ -215,6 +215,12 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
       <option value="3개월">3개월</option><option value="6개월">6개월</option>
     </select>
     <div id="as-note" class="info-box ok" style="display:none;margin-top:8px"></div>
+  </div>
+  <div class="card"><div class="card-title">제8조 · 운반비 부담</div>
+    <div class="radio-row">
+      <div class="radio-opt sel" id="art8a" onclick="pickArt8(true)">포함 (매수인 부담)</div>
+      <div class="radio-opt" id="art8b" onclick="pickArt8(false)">제외 (계약서 미기재)</div>
+    </div>
   </div>
   <div class="card"><div class="card-title">제5조 · 계약위반 처리</div>
     <div class="radio-row">
@@ -272,7 +278,7 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
 <script>
 const DAYS_KO=['일','월','화','수','목','금','토'];
 const HOLIDAYS=['2026-01-01','2026-01-28','2026-01-29','2026-01-30','2026-03-01','2026-05-05','2026-05-25','2026-06-06','2026-08-15','2026-09-24','2026-09-25','2026-09-26','2026-10-03','2026-10-09','2026-12-25'];
-let items=[], ctype='sell', art5='single';
+let items=[], ctype='sell', art5='single', art8=true;
 
 // Tesseract.js 동적 로드
 function loadTesseract(){
@@ -384,6 +390,12 @@ function updateDelivery(){
 }
 function getAsText(){const v=document.getElementById('asper').value;if(v==='없음')return'없음';return`입고일 기준 ${v} A/S 보증 (고의 또는 과실 및 소모성 부품 제외)`;}
 function updateAsNote(){const v=document.getElementById('asper').value,el=document.getElementById('as-note');if(v==='없음'){el.style.display='none';return;}el.style.display='block';el.textContent=getAsText();}
+function pickArt8(v){
+  art8=v;
+  document.getElementById('art8a').classList.toggle('sel',v===true);
+  document.getElementById('art8b').classList.toggle('sel',v===false);
+}
+
 function pickArt5(v){if(ctype==='buy')return;art5=v;document.getElementById('art5a').classList.toggle('sel',v==='double');document.getElementById('art5b').classList.toggle('sel',v==='single');updateArt5Note();}
 function updateArt5Note(){
   const el=document.getElementById('art5note');el.style.display='block';
@@ -395,6 +407,10 @@ function initArt5(){
   if(ctype==='buy'){art5='double';document.getElementById('art5a').classList.add('sel');document.getElementById('art5b').classList.remove('sel');document.getElementById('art5b').classList.add('disabled');document.getElementById('art5a').classList.remove('disabled');}
   else{art5='single';document.getElementById('art5b').classList.add('sel');document.getElementById('art5a').classList.remove('sel','disabled');document.getElementById('art5b').classList.remove('disabled');}
   updateArt5Note();
+  // art8 초기화
+  art8=true;
+  document.getElementById('art8a').classList.add('sel');
+  document.getElementById('art8b').classList.remove('sel');
 }
 function addItem(){
   const nm=document.getElementById('i_nm').value.trim();if(!nm)return;
@@ -715,34 +731,41 @@ async function generatePDF(save=false){
   const SF=(sz,b=false)=>`${b?'bold ':''} ${sz}px "Noto Serif KR"`;
   const NSF=(sz,b=false)=>`${b?'bold ':''} ${sz}px "Noto Sans KR"`;
 
+  // 품목 수에 따라 자동 스케일 조정
+  const nItems=items.length;
+  const scale = nItems>=6 ? 0.82 : nItems>=4 ? 0.90 : nItems>=3 ? 0.95 : 1.0;
+  const FS=(sz)=>Math.floor(sz*scale); // 폰트 크기 스케일
+  const GS=(sz)=>Math.floor(sz*scale); // 간격 스케일
+
   let y=32;
 
   // ── 제목 ──
-  ctx.font=SF(33,true); ctx.fillStyle='#111'; ctx.textAlign='center';
-  ctx.fillText('중 고  기 계  매 매  계 약 서',W/2,y+30); y+=52;
+  const contractTitle = '중 고  기 계  매 매  계 약 서';
+  ctx.font=SF(FS(33),true); ctx.fillStyle='#111'; ctx.textAlign='center';
+  ctx.fillText(contractTitle,W/2,y+GS(30)); y+=GS(52);
   ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(ML,y); ctx.lineTo(W-MR,y); ctx.stroke(); y+=16;
+  ctx.beginPath(); ctx.moveTo(ML,y); ctx.lineTo(W-MR,y); ctx.stroke(); y+=GS(16);
 
   // ── 당사자 ──
-  ctx.font=NSF(12.5); ctx.fillStyle='#333'; ctx.textAlign='left';
+  ctx.font=NSF(FS(12.5)); ctx.fillStyle='#333'; ctx.textAlign='left';
   const intro=`매도인 "${seller.name}"를 "갑", 매수인 "${buyer.name}"를 "을"이라 칭하고 갑·을 당사자간의 아래 조항을 매매 계약 체결한다.`;
-  y+=wrapText(ctx,intro,ML,y,CW,18)+16;
+  y+=wrapText(ctx,intro,ML,y,CW,GS(18))+GS(16);
 
   function thinLine(yy,c='#ccc'){ctx.strokeStyle=c;ctx.lineWidth=0.6;ctx.beginPath();ctx.moveTo(ML,yy);ctx.lineTo(W-MR,yy);ctx.stroke();}
-  function secHead(t,yy){ctx.font=NSF(12,true);ctx.fillStyle='#222';ctx.textAlign='left';ctx.fillText('[ '+t+' ]',ML,yy);return yy+14;}
+  function secHead(t,yy){ctx.font=NSF(FS(12),true);ctx.fillStyle='#222';ctx.textAlign='left';ctx.fillText('[ '+t+' ]',ML,yy);return yy+GS(14);}
 
   // ── 품목 테이블 ──
-  y+=10;
+  y+=GS(10);
   y=secHead('매매 물건 명세',y);
   const iCols=[[166,'품  명'],[130,'규  격'],[58,'수량'],[180,'금  액 (원)'],[160,'비  고']];
   y=drawTable(ctx,ML,y,iCols,
     items.map(it=>[it.nm,it.sp||'-',it.qt+'대',it.prFmt==='포함'?'포함':it.prFmt,it.nt||'-']),
     [['vat',['','','VAT 10%',vat.toLocaleString(),'']],
      ['total',['합  계','','',grand.toLocaleString(),'']]]
-  );
+  ,scale);
 
   // ── 대금조건 위 여백 ──
-  y+=26;
+  y+=GS(26);
 
   y=secHead('대금 조건',y);
   const pCols=[[116,'구  분'],[406,'금  액'],[172,'비  고']];
@@ -750,15 +773,15 @@ async function generatePDF(save=false){
     ['총 매매대금',`금 ${kor(grand)}원정  \\${grand.toLocaleString()}`,'VAT 포함'],
     ['계  약  금',`금 ${kor(dep)}원정  \\${dep.toLocaleString()}`,'계약 시 지급'],
     ['잔      금',`금 ${kor(bal)}원정  \\${bal.toLocaleString()}`,document.getElementById('btiming').value],
-  ],[]);
+  ],[],scale);
 
   // ── 계약조항 위 여백 ──
-  y+=26;
+  y+=GS(26);
 
   y=secHead('계약 조항',y);
-  y+=6;
+  y+=GS(6);
 
-  const clauses=[
+  const clausesBase=[
     `"갑"은 "을"에 대하여 상기 물건을 상기 조항의 약정으로 매도하고, "을"은 이를 매수한다.`,
     `납품시기: ${delivery}  (상차도 조건)`,
     `잔금은 ${document.getElementById('btiming').value} 지급한다.`,
@@ -766,19 +789,22 @@ async function generatePDF(save=false){
     `당사자간 일방적 계약위반 시, ${art5txt}`,
     `일방이 본 계약을 위약할 경우 상대방은 최고 절차없이 즉시 계약을 해제할 권리가 있다.`,
     `본 계약서에 기재되지 않은 사항은 일반 상거래 법에 준한다.`,
-    `A/S 및 사후관리, 운반비 등은 일체 매수인의 부담으로 한다.`,
+  ];
+  if(art8) clausesBase.push(`A/S 및 사후관리, 운반비 등은 일체 매수인의 부담으로 한다.`);
+  clausesBase.push(
     `계약서 2통을 작성하여 "갑"·"을" 각각 1통씩 보관하기로 한다.`,
     `매도인은 법적 하자(은행시설자금, 신용보증기금미수금, 리스·렌탈·캐피탈자금, 압류물건, 할부 미수금 등)가 없음을 증명하며, 발생 시 민·형사상 책임을 감수한다.`,
-  ];
+  );
+  const clauses=clausesBase;
 
   clauses.forEach((c,i)=>{
     const prefix=`제${i+1}조.  `;
-    ctx.font=NSF(12,true); ctx.fillStyle='#222'; ctx.textAlign='left';
+    ctx.font=NSF(FS(12),true); ctx.fillStyle='#222'; ctx.textAlign='left';
     const pw=ctx.measureText(prefix).width;
     ctx.fillText(prefix,ML,y);
-    ctx.font=NSF(12); ctx.fillStyle='#333';
-    const lh=wrapText(ctx,c,ML+pw,y,CW-pw,17);
-    y+=lh+5;
+    ctx.font=NSF(FS(12)); ctx.fillStyle='#333';
+    const lh=wrapText(ctx,c,ML+pw,y,CW-pw,GS(17));
+    y+=lh+GS(5);
   });
 
   y+=52; y+=14;
@@ -938,18 +964,19 @@ function wrapText(ctx,text,x,y,maxW,lh){
   return lines.length*lh;
 }
 
-function drawTable(ctx,x,y,cols,rows,footRows=[]){
-  const RH=26,HH=28,tw=cols.reduce((a,c)=>a+c[0],0);
+function drawTable(ctx,x,y,cols,rows,footRows=[],scale=1){
+  const RH=Math.floor(26*scale),HH=Math.floor(28*scale),tw=cols.reduce((a,c)=>a+c[0],0);
+  const fsz=Math.floor(12*scale);
   ctx.fillStyle='#1a1a2e'; ctx.fillRect(x,y,tw,HH);
-  let cx=x; ctx.fillStyle='#fff'; ctx.font=`bold 12px "Noto Sans KR"`; ctx.textAlign='center';
+  let cx=x; ctx.fillStyle='#fff'; ctx.font=`bold ${fsz}px "Noto Sans KR"`; ctx.textAlign='center';
   cols.forEach(([w,l])=>{ctx.fillText(l,cx+w/2,y+HH-8);cx+=w;}); y+=HH;
   rows.forEach((row,ri)=>{
     ctx.fillStyle=ri%2===0?'#fff':'#f8f7f5'; ctx.fillRect(x,y,tw,RH);
     cx=x; ctx.fillStyle='#222'; ctx.textAlign='center';
     row.forEach((cell,ci)=>{
       const cw=cols[ci][0],txt=String(cell||'');
-      ctx.font=`12px "Noto Sans KR"`;
-      if(ctx.measureText(txt).width>cw-8){ctx.font=`10px "Noto Sans KR"`;}
+      ctx.font=`${fsz}px "Noto Sans KR"`;
+      if(ctx.measureText(txt).width>cw-8){ctx.font=`${Math.floor(fsz*0.85)}px "Noto Sans KR"`;}
       ctx.fillText(txt,cx+cw/2,y+RH-7); cx+=cw;
     });
     ctx.strokeStyle='#e8e5e0'; ctx.lineWidth=0.4; ctx.strokeRect(x,y,tw,RH); y+=RH;
@@ -959,7 +986,7 @@ function drawTable(ctx,x,y,cols,rows,footRows=[]){
     cx=x; ctx.textAlign='center';
     cells.forEach((cell,ci)=>{
       const cw=cols[ci][0];
-      ctx.font=type==='total'?`bold 12px "Noto Sans KR"`:`12px "Noto Sans KR"`;
+      ctx.font=type==='total'?`bold ${fsz}px "Noto Sans KR"`:`${fsz}px "Noto Sans KR"`;
       ctx.fillStyle=type==='total'?'#111':'#555';
       if(cell)ctx.fillText(String(cell),cx+cw/2,y+RH-7); cx+=cw;
     });
