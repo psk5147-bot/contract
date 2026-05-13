@@ -719,7 +719,14 @@ async function generatePDF(save=false){
 
   // 캔버스 (2배 해상도로 선명하게)
   const SC=2;
-  const W=794,H=1123;
+  const W=794;
+  const nItems=items.length;
+  const scale = nItems>=12 ? 0.75
+              : nItems>=10 ? 0.82
+              : nItems>=8  ? 0.90
+              : nItems>=6  ? 0.95
+              : 1.0;
+  const H = 1123;
   const canvas=document.createElement('canvas');
   canvas.width=W*SC; canvas.height=H*SC;
   const ctx=canvas.getContext('2d');
@@ -735,15 +742,6 @@ async function generatePDF(save=false){
   // 품목 수에 따라 자동 스케일 조정 (서명란 고정 기준)
   const sigAreaH = 182 + 30; // 서명란 + 계약일 공간
   const availH = H - 32 - sigAreaH; // 사용 가능한 높이
-
-  const nItems=items.length;
-  const scale = nItems>=10 ? 0.65
-              : nItems>=8  ? 0.70
-              : nItems>=6  ? 0.78
-              : nItems>=5  ? 0.84
-              : nItems>=4  ? 0.90
-              : nItems>=3  ? 0.95
-              : 1.0;
   const FS=(sz)=>Math.floor(sz*scale); // 폰트 크기 스케일
   const GS=(sz)=>Math.floor(sz*scale); // 간격 스케일
 
@@ -775,7 +773,7 @@ async function generatePDF(save=false){
   ,scale);
 
   // ── 대금조건 위 여백 ──
-  y+=GS(26);
+  y+=GS(14);
 
   y=secHead('대금 조건',y);
   const pCols=[[116,'구  분'],[406,'금  액'],[172,'비  고']];
@@ -786,10 +784,10 @@ async function generatePDF(save=false){
   ],[],scale);
 
   // ── 계약조항 위 여백 ──
-  y+=GS(26);
+  y+=GS(14);
 
   y=secHead('계약 조항',y);
-  y+=GS(6);
+  y+=GS(4);
 
   const clausesBase=[
     `"갑"은 "을"에 대하여 상기 물건을 상기 조항의 약정으로 매도하고, "을"은 이를 매수한다.`,
@@ -813,11 +811,11 @@ async function generatePDF(save=false){
     const pw=ctx.measureText(prefix).width;
     ctx.fillText(prefix,ML,y);
     ctx.font=NSF(FS(12)); ctx.fillStyle='#333';
-    const lh=wrapText(ctx,c,ML+pw,y,CW-pw,GS(17));
-    y+=lh+GS(5);
+    const lh=wrapText(ctx,c,ML+pw,y,CW-pw,GS(16));
+    y+=lh+GS(3);
   });
 
-  y+=52; y+=14;
+  y+=GS(16);
 
   // ── 서명란 위치 먼저 계산 ──
   const SH=182;
