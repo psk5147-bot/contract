@@ -739,10 +739,9 @@ async function generatePDF(save=false){
   const SC=2;
   const W=794;
   const nItems=items.length;
-  const scale = nItems>=12 ? 0.80
-              : nItems>=10 ? 0.87
-              : nItems>=8  ? 0.93
-              : nItems>=6  ? 0.97
+  const scale = nItems>=12 ? 0.85
+              : nItems>=10 ? 0.91
+              : nItems>=8  ? 0.96
               : 1.0;
   const H = 1123;
   const canvas=document.createElement('canvas');
@@ -791,7 +790,7 @@ async function generatePDF(save=false){
   ,scale);
 
   // ── 대금조건 위 여백 ──
-  y+=20;
+  y+=32;
 
   y=secHead('대금 조건',y);
   const pCols=[[116,'구  분'],[406,'금  액'],[172,'비  고']];
@@ -802,7 +801,7 @@ async function generatePDF(save=false){
   ],[],scale);
 
   // ── 계약조항 위 여백 ──
-  y+=20;
+  y+=32;
 
   y=secHead('계약 조항',y);
   y+=6;
