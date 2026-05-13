@@ -208,6 +208,14 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
       <input id="d_custom" type="number" min="1" max="31" placeholder="예) 25" oninput="updateDelivery()"/>
     </div>
     <div id="d_preview" class="info-box blue" style="display:none;margin-top:8px"></div>
+    <div class="field" style="margin-top:12px;margin-bottom:0">
+      <label>상차 조건</label>
+      <div class="radio-row" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="radio-opt sel" id="sc_a" onclick="pickSangcha('상차도 조건')">상차도 조건</div>
+        <div class="radio-opt" id="sc_b" onclick="pickSangcha('구매자 상차 조건')">구매자 상차 조건</div>
+        <div class="radio-opt" id="sc_c" onclick="pickSangcha('')">공란</div>
+      </div>
+    </div>
   </div>
   <div class="card"><div class="card-title">A/S 보증</div>
     <select id="asper" onchange="updateAsNote()">
@@ -391,6 +399,14 @@ function updateDelivery(){
 }
 function getAsText(){const v=document.getElementById('asper').value;if(v==='없음')return'없음';return`입고일 기준 ${v} A/S 보증 (고의 또는 과실 및 소모성 부품 제외)`;}
 function updateAsNote(){const v=document.getElementById('asper').value,el=document.getElementById('as-note');if(v==='없음'){el.style.display='none';return;}el.style.display='block';el.textContent=getAsText();}
+let sangcha = '상차도 조건';
+function pickSangcha(v){
+  sangcha=v;
+  ['sc_a','sc_b','sc_c'].forEach(id=>document.getElementById(id).classList.remove('sel'));
+  if(v==='상차도 조건') document.getElementById('sc_a').classList.add('sel');
+  else if(v==='구매자 상차 조건') document.getElementById('sc_b').classList.add('sel');
+  else document.getElementById('sc_c').classList.add('sel');
+}
 function pickArt8(v){
   art8=v;
   document.getElementById('art8a').classList.toggle('sel',v===true);
@@ -663,6 +679,7 @@ async function loadAndEdit(id){
   document.getElementById('deposit').value=d.deposit||'';
   document.getElementById('btiming').value=d.btiming||'상차 후 출발 전';
   // 납품/AS/제5조
+  if(d.sangcha!==undefined) pickSangcha(d.sangcha); else pickSangcha('상차도 조건');
   document.getElementById('d_month').value=d.d_month||'';
   document.getElementById('d_day').value=d.d_day||'말일';
   document.getElementById('d_within').value=d.d_within||'이내';
@@ -683,6 +700,7 @@ function getFormData(){
     items,
     deposit:document.getElementById('deposit').value,
     btiming:document.getElementById('btiming').value,
+    sangcha:sangcha,
     d_month:document.getElementById('d_month').value,
     d_day:document.getElementById('d_day').value,
     d_within:document.getElementById('d_within').value,
@@ -791,7 +809,7 @@ async function generatePDF(save=false){
 
   const clausesBase=[
     `"갑"은 "을"에 대하여 상기 물건을 상기 조항의 약정으로 매도하고, "을"은 이를 매수한다.`,
-    `납품시기: ${delivery}  (상차도 조건)`,
+    `납품시기: ${delivery}${sangcha ? '  (' + sangcha + ')' : ''}`,
     `잔금은 ${document.getElementById('btiming').value} 지급한다.`,
     `A/S 보증기간: ${asText}`,
     `당사자간 일방적 계약위반 시, ${art5txt}`,
