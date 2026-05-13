@@ -6,6 +6,7 @@
 <title>계약서</title>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#1a1a2e"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="화천이티씨 계약서"/>
@@ -818,15 +819,16 @@ async function generatePDF(save=false){
 
   y+=52; y+=14;
 
-  // ── 계약일 ──
+  // ── 서명란 위치 먼저 계산 ──
+  const SH=182;
+  const SW=(W-ML-MR)/2;
+  const sigY=H-SH-16; // 항상 하단에 고정
+
   // ── 계약일 (서명란 위에 고정) ──
   ctx.font=NSF(12,true); ctx.textAlign='center'; ctx.fillStyle='#111';
   ctx.fillText(`계약일자 : ${cdate}`,W/2,sigY-10);
 
   // ── 서명란 (항상 하단 고정) ──
-  const SH=182;
-  const SW=(W-ML-MR)/2;
-  const sigY=H-SH-16; // 항상 하단에 고정
 
   // 외곽 테두리
   ctx.strokeStyle='#666'; ctx.lineWidth=0.8;
