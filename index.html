@@ -154,7 +154,7 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
       <div class="r3">
         <div class="field" style="margin:0"><label>품명</label><input id="i_nm" placeholder="중고 머시닝센터"/></div>
         <div class="field" style="margin:0"><label>규격</label><input id="i_sp" placeholder="VESTA-1000" oninput="toUpper(this)" style="text-transform:uppercase"/></div>
-        <div class="field" style="margin:0"><label>수량</label><input id="i_qt" type="number" min="1" placeholder="1"/></div>
+        <div class="field" style="margin:0"><label>수량</label><div style="display:flex;gap:4px"><input id="i_qt" type="number" min="1" placeholder="1" style="flex:1;min-width:0"/><select id="i_unit" onchange="checkCustomUnit()" style="width:80px;flex-shrink:0;font-size:13px;padding:10px 4px;border:1.5px solid var(--border);border-radius:8px;background:#fafaf8;color:var(--text);outline:none"><option value="대">대</option><option value="식">식</option><option value="SET">SET</option><option value="EA">EA</option><option value="직접입력">직접입력</option></select></div><input id="i_unit_custom" placeholder="단위 직접입력" style="display:none;margin-top:4px;width:100%;font-size:13px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;background:#fafaf8;color:var(--text);outline:none"/></div>
       </div>
       <div class="r2" style="margin-top:8px">
         <div class="field" style="margin:0"><label>금액 (비워두면 "포함")</label><input id="i_pr" placeholder="예) 20,000,000" oninput="fmtInput(this)"/></div>
@@ -429,17 +429,29 @@ function initArt5(){
   document.getElementById('art8a').classList.add('sel');
   document.getElementById('art8b').classList.remove('sel');
 }
+function checkCustomUnit(){
+  const sel=document.getElementById('i_unit').value;
+  const custom=document.getElementById('i_unit_custom');
+  custom.style.display=sel==='직접입력'?'block':'none';
+  if(sel!=='직접입력') custom.value='';
+}
 function addItem(){
   const nm=document.getElementById('i_nm').value.trim();if(!nm)return;
   const prRaw=document.getElementById('i_pr').value.replace(/[^0-9]/g,'');
   const prFmt=prRaw?parseInt(prRaw).toLocaleString():'포함';
-  items.push({nm,sp:document.getElementById('i_sp').value.trim().toUpperCase(),qt:document.getElementById('i_qt').value.trim()||'1',pr:prRaw,prFmt,nt:document.getElementById('i_nt').value.trim()});
-  renderItems();['i_nm','i_sp','i_qt','i_pr','i_nt'].forEach(id=>document.getElementById(id).value='');calcAll();
+  const unitSel=document.getElementById('i_unit').value;
+  const unit=unitSel==='직접입력'?(document.getElementById('i_unit_custom').value.trim()||'대'):unitSel;
+  items.push({nm,sp:document.getElementById('i_sp').value.trim().toUpperCase(),qt:document.getElementById('i_qt').value.trim()||'1',unit,pr:prRaw,prFmt,nt:document.getElementById('i_nt').value.trim()});
+  renderItems();['i_nm','i_sp','i_qt','i_pr','i_nt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('i_unit').value='대';
+  document.getElementById('i_unit_custom').value='';
+  document.getElementById('i_unit_custom').style.display='none';
+  calcAll();
 }
 function renderItems(){
   document.getElementById('ilist').innerHTML=items.map((it,i)=>`
     <div class="item-row"><div class="ir-info"><div class="ir-name">${it.nm}${it.sp?' / '+it.sp:''}</div>
-    <div class="ir-sub">수량 ${it.qt}대 · ${it.prFmt==='포함'?'포함':it.prFmt+'원'}${it.nt?' · '+it.nt:''}</div></div>
+    <div class="ir-sub">수량 ${it.qt}${it.unit||'대'} · ${it.prFmt==='포함'?'포함':it.prFmt+'원'}${it.nt?' · '+it.nt:''}</div></div>
     <button class="del-btn" onclick="delItem(${i})">×</button></div>`).join('');
 }
 function delItem(i){items.splice(i,1);renderItems();calcAll();}
@@ -784,7 +796,7 @@ async function generatePDF(save=false){
   y=secHead('매매 물건 명세',y);
   const iCols=[[166,'품  명'],[130,'규  격'],[58,'수량'],[180,'금  액 (원)'],[160,'비  고']];
   y=drawTable(ctx,ML,y,iCols,
-    items.map(it=>[it.nm,it.sp||'-',it.qt+'대',it.prFmt==='포함'?'포함':it.prFmt,it.nt||'-']),
+    items.map(it=>[it.nm,it.sp||'-',it.qt+(it.unit||'대'),it.prFmt==='포함'?'포함':it.prFmt,it.nt||'-']),
     [['vat',['','','VAT 10%',vat.toLocaleString(),'']],
      ['total',['합  계','','',grand.toLocaleString(),'']]]
   ,scale);
