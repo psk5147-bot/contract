@@ -185,6 +185,12 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
 </div>
 
 <div class="step" id="s4">
+  <div class="card"><div class="card-title">계약일자</div>
+    <div class="field" style="margin-bottom:0">
+      <label>계약 체결일</label>
+      <input id="contract_date" type="date" style="font-size:15px;padding:11px 12px"/>
+    </div>
+  </div>
   <div class="card"><div class="card-title">납품 시기</div>
     <div class="r3">
       <div class="field" style="margin:0"><label>월</label>
@@ -474,7 +480,7 @@ function go(n){
     document.getElementById('ctype-label').textContent=s?'매도계약서 — 화천이티씨 = 갑':'매수계약서 — 화천이티씨 = 을';
   }
   if(n===3)calcAll();
-  if(n===4){initArt5();updateDelivery();updateAsNote();}
+  if(n===4){initArt5();updateDelivery();updateAsNote();if(!document.getElementById('contract_date').value){document.getElementById('contract_date').value=new Date().toISOString().slice(0,10);}}
   if(n===5)buildSum();
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById('s'+n).classList.add('active');
@@ -679,6 +685,8 @@ async function loadAndEdit(id){
   const d=c.formData;
   // 계약서 종류
   ctype=d.ctype||'sell'; setType(ctype);
+  // 계약일자
+  document.getElementById('contract_date').value=d.contract_date||'';
   // 상대방 정보
   document.getElementById('b_name').value=d.b_name||'';
   document.getElementById('b_reg').value=d.b_reg||'';
@@ -705,6 +713,7 @@ async function loadAndEdit(id){
 function getFormData(){
   return {
     ctype,
+    contract_date:document.getElementById('contract_date').value,
     b_name:document.getElementById('b_name').value,
     b_reg:document.getElementById('b_reg').value,
     b_addr:document.getElementById('b_addr').value,
@@ -738,7 +747,11 @@ async function generatePDF(save=false){
   const HQ={name:'화천이티씨',reg:'483-26-00262',addr:'충남 아산시 배방읍 휴대길 167',rep:'문형록'};
   const OT={name:document.getElementById('b_name').value,reg:document.getElementById('b_reg').value,addr:document.getElementById('b_addr').value,rep:document.getElementById('b_rep').value};
   const seller=isSell?HQ:OT, buyer=isSell?OT:HQ;
-  const today=new Date(),cdate=`${today.getFullYear()}년 ${String(today.getMonth()+1).padStart(2,'0')}월 ${String(today.getDate()).padStart(2,'0')}일`;
+  const today=new Date();
+  const cdRaw=document.getElementById('contract_date').value;
+  let cdate;
+  if(cdRaw){const[y,m,d]=cdRaw.split('-');cdate=`${y}년 ${m}월 ${d}일`;}
+  else{cdate=`${today.getFullYear()}년 ${String(today.getMonth()+1).padStart(2,'0')}월 ${String(today.getDate()).padStart(2,'0')}일`;}
   const delivery=getDelivery().text||'-', asText=getAsText();
   const art5txt=art5==='double'?'"을"은 계약금을 포기하고, "갑"은 계약금의 배액을 반환한다.':'"을"은 계약금을 포기하고, "갑"은 계약금을 반환한다.';
 
