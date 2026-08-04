@@ -178,19 +178,14 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
       <div class="field"><label>잔금 (자동)</label><input id="balance" readonly/></div>
     </div>
     <div class="field"><label>잔금 지급 시기</label>
-      <select id="btiming"><option>상차 후 출발 전</option><option>출고 1일 전</option><option>납품 후 즉시</option><option>계약 당일</option><option>귀사 결재 조건</option><option>별도 협의</option></select>
+      <select id="btiming" onchange="checkCustomBtiming()"><option>상차 후 출발 전</option><option>출고 1일 전</option><option>납품 후 즉시</option><option>계약 당일</option><option>귀사 결재 조건</option><option>별도 협의</option><option value="직접입력">직접입력</option></select>
+      <input id="btiming_custom" placeholder="지급 시기 직접입력 (예: 검수 완료 후 3일 이내)" style="display:none;margin-top:8px"/>
     </div>
   </div>
   <div class="brow"><button class="btn btn-outline" onclick="go(2)">← 이전</button><button class="btn btn-next btn-outline" onclick="go(4)">다음 →</button></div>
 </div>
 
 <div class="step" id="s4">
-  <div class="card"><div class="card-title">계약일자</div>
-    <div class="field" style="margin-bottom:0">
-      <label>계약 체결일</label>
-      <input id="contract_date" type="date" style="font-size:15px;padding:11px 12px"/>
-    </div>
-  </div>
   <div class="card"><div class="card-title">납품 시기</div>
     <div class="r3">
       <div class="field" style="margin:0"><label>월</label>
@@ -435,6 +430,16 @@ function initArt5(){
   document.getElementById('art8a').classList.add('sel');
   document.getElementById('art8b').classList.remove('sel');
 }
+function checkCustomBtiming(){
+  const sel=document.getElementById('btiming').value;
+  const custom=document.getElementById('btiming_custom');
+  custom.style.display=sel==='직접입력'?'block':'none';
+}
+function getBtiming(){
+  const sel=document.getElementById('btiming').value;
+  if(sel==='직접입력') return document.getElementById('btiming_custom').value.trim()||'별도 협의';
+  return sel;
+}
 function checkCustomUnit(){
   const sel=document.getElementById('i_unit').value;
   const custom=document.getElementById('i_unit_custom');
@@ -480,7 +485,7 @@ function go(n){
     document.getElementById('ctype-label').textContent=s?'매도계약서 — 화천이티씨 = 갑':'매수계약서 — 화천이티씨 = 을';
   }
   if(n===3)calcAll();
-  if(n===4){initArt5();updateDelivery();updateAsNote();if(!document.getElementById('contract_date').value){document.getElementById('contract_date').value=new Date().toISOString().slice(0,10);}}
+  if(n===4){initArt5();updateDelivery();updateAsNote();}
   if(n===5)buildSum();
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById('s'+n).classList.add('active');
@@ -489,7 +494,7 @@ function go(n){
 }
 function buildSum(){
   const sum=items.reduce((a,it)=>a+(parseInt(it.pr)||0),0),vat=Math.round(sum*0.1),grand=sum+vat,dep=rawNum('deposit');
-  const rows=[['종류',ctype==='sell'?'매도계약서':'매수계약서'],[ctype==='sell'?'매수인':'매도인',document.getElementById('b_name').value],['사업자번호',document.getElementById('b_reg').value],['주소',document.getElementById('b_addr').value],['대표자',document.getElementById('b_rep').value],['품목',items.map(it=>it.nm+(it.sp?' '+it.sp:'')).join(', ')],['공급가',sum.toLocaleString()+'원'],['VAT',vat.toLocaleString()+'원'],['총 매매대금',grand.toLocaleString()+'원'],['계약금',dep.toLocaleString()+'원'],['잔금',(grand-dep).toLocaleString()+'원'],['잔금지급',document.getElementById('btiming').value],['납품시기',getDelivery().text||'-'],['A/S',getAsText()],['제5조',art5==='double'?'배액 반환':'계약금 반환']];
+  const rows=[['종류',ctype==='sell'?'매도계약서':'매수계약서'],[ctype==='sell'?'매수인':'매도인',document.getElementById('b_name').value],['사업자번호',document.getElementById('b_reg').value],['주소',document.getElementById('b_addr').value],['대표자',document.getElementById('b_rep').value],['품목',items.map(it=>it.nm+(it.sp?' '+it.sp:'')).join(', ')],['공급가',sum.toLocaleString()+'원'],['VAT',vat.toLocaleString()+'원'],['총 매매대금',grand.toLocaleString()+'원'],['계약금',dep.toLocaleString()+'원'],['잔금',(grand-dep).toLocaleString()+'원'],['잔금지급',getBtiming()],['납품시기',getDelivery().text||'-'],['A/S',getAsText()],['제5조',art5==='double'?'배액 반환':'계약금 반환']];
   document.getElementById('sumtbl').innerHTML=rows.map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('');
 }
 
@@ -685,8 +690,6 @@ async function loadAndEdit(id){
   const d=c.formData;
   // 계약서 종류
   ctype=d.ctype||'sell'; setType(ctype);
-  // 계약일자
-  document.getElementById('contract_date').value=d.contract_date||'';
   // 상대방 정보
   document.getElementById('b_name').value=d.b_name||'';
   document.getElementById('b_reg').value=d.b_reg||'';
@@ -698,6 +701,8 @@ async function loadAndEdit(id){
   // 대금조건
   document.getElementById('deposit').value=d.deposit||'';
   document.getElementById('btiming').value=d.btiming||'상차 후 출발 전';
+  document.getElementById('btiming_custom').value=d.btiming_custom||'';
+  checkCustomBtiming();
   // 납품/AS/제5조
   if(d.sangcha!==undefined) pickSangcha(d.sangcha); else pickSangcha('상차도 조건');
   document.getElementById('d_month').value=d.d_month||'';
@@ -713,7 +718,6 @@ async function loadAndEdit(id){
 function getFormData(){
   return {
     ctype,
-    contract_date:document.getElementById('contract_date').value,
     b_name:document.getElementById('b_name').value,
     b_reg:document.getElementById('b_reg').value,
     b_addr:document.getElementById('b_addr').value,
@@ -721,6 +725,7 @@ function getFormData(){
     items,
     deposit:document.getElementById('deposit').value,
     btiming:document.getElementById('btiming').value,
+    btiming_custom:document.getElementById('btiming_custom').value,
     sangcha:sangcha,
     d_month:document.getElementById('d_month').value,
     d_day:document.getElementById('d_day').value,
@@ -747,11 +752,7 @@ async function generatePDF(save=false){
   const HQ={name:'화천이티씨',reg:'483-26-00262',addr:'충남 아산시 배방읍 휴대길 167',rep:'문형록'};
   const OT={name:document.getElementById('b_name').value,reg:document.getElementById('b_reg').value,addr:document.getElementById('b_addr').value,rep:document.getElementById('b_rep').value};
   const seller=isSell?HQ:OT, buyer=isSell?OT:HQ;
-  const today=new Date();
-  const cdRaw=document.getElementById('contract_date').value;
-  let cdate;
-  if(cdRaw){const[y,m,d]=cdRaw.split('-');cdate=`${y}년 ${m}월 ${d}일`;}
-  else{cdate=`${today.getFullYear()}년 ${String(today.getMonth()+1).padStart(2,'0')}월 ${String(today.getDate()).padStart(2,'0')}일`;}
+  const today=new Date(),cdate=`${today.getFullYear()}년 ${String(today.getMonth()+1).padStart(2,'0')}월 ${String(today.getDate()).padStart(2,'0')}일`;
   const delivery=getDelivery().text||'-', asText=getAsText();
   const art5txt=art5==='double'?'"을"은 계약금을 포기하고, "갑"은 계약금의 배액을 반환한다.':'"을"은 계약금을 포기하고, "갑"은 계약금을 반환한다.';
 
@@ -822,7 +823,7 @@ async function generatePDF(save=false){
   y=drawTable(ctx,ML,y,pCols,[
     ['총 매매대금',`금 ${kor(grand)}원정  \\${grand.toLocaleString()}`,'VAT 포함'],
     ['계  약  금',`금 ${kor(dep)}원정  \\${dep.toLocaleString()}`,'계약 시 지급'],
-    ['잔      금',`금 ${kor(bal)}원정  \\${bal.toLocaleString()}`,document.getElementById('btiming').value],
+    ['잔      금',`금 ${kor(bal)}원정  \\${bal.toLocaleString()}`,getBtiming()],
   ],[],scale);
 
   // ── 계약조항 위 여백 ──
@@ -834,7 +835,7 @@ async function generatePDF(save=false){
   const clausesBase=[
     `"갑"은 "을"에 대하여 상기 물건을 상기 조항의 약정으로 매도하고, "을"은 이를 매수한다.`,
     `납품시기: ${delivery}${sangcha ? '  (' + sangcha + ')' : ''}`,
-    `잔금은 ${document.getElementById('btiming').value} 지급한다.`,
+    `잔금은 ${getBtiming()} 지급한다.`,
     `A/S 보증기간: ${asText}`,
     `당사자간 일방적 계약위반 시, ${art5txt}`,
     `일방이 본 계약을 위약할 경우 상대방은 최고 절차없이 즉시 계약을 해제할 권리가 있다.`,
