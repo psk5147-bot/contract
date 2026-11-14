@@ -1,6 +1,6 @@
 {
-  "name": "화천이티씨 계약서",
-  "short_name": "계약서",
+  "name": "계약서 관리",
+  "short_name": "계약서 관리",
   "description": "화천이티씨 계약서",
   "start_url": "./",
   "display": "standalone",
