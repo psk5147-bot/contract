@@ -136,10 +136,11 @@ button{font-family:inherit}.btn{min-height:46px;font-size:14px;border-radius:8px
 @media(min-width:900px){#s0,#s1,#s2,#s3,#s4,#s5{max-width:800px;margin:auto}.header{padding-top:20px}.content{padding-top:24px}}
 @media(max-width:600px){.content{padding:16px 14px}.card{padding:17px 15px}.header{padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 14px}.header h1{font-size:18px}.type-grid{grid-template-columns:1fr}.type-card{min-height:108px;padding:20px}.type-card.sel{padding:19px}.start-guide{font-size:12px}.r2{gap:12px}.r3{grid-template-columns:repeat(3,minmax(0,1fr))}#s2 .r3{grid-template-columns:1fr 1fr}#s2 .r3>.field:first-child{grid-column:1/-1}#s2 .r3>.field:nth-child(3) select{width:64px!important;font-size:14px!important}#s2 .r2{grid-template-columns:1fr}.radio-row{gap:8px}.radio-opt{font-size:12px;padding:10px 8px}.sum-table td:first-child{width:34%}#contract-list{grid-template-columns:1fr}#s6>.card{padding:16px 13px}#contract-list>div{padding:14px!important}}
 </style>
+<link rel="stylesheet" href="registration-ai.css?v=20261114-1">
 </head>
 <body>
 <div class="header">
-  <div><h1>계약서 관리</h1><p id="ctype-label">계약서 종류를 선택하세요</p></div>
+  <div><h1>계약서 관리</h1><p id="ctype-label">계약서 종류를 선택하세요</p><div id="contract-draft-status" role="status" aria-live="polite"></div></div>
 </div>
 <div class="prog-wrap"><div class="prog">
   <div class="pip on" id="p1"></div><div class="pip" id="p2"></div>
@@ -161,10 +162,11 @@ button{font-family:inherit}.btn{min-height:46px;font-size:14px;border-radius:8px
   <div class="notice" id="s1notice"></div>
   <div class="card">
     <div class="card-title" id="s1title">상대방 정보</div>
-    <div class="ocr-zone" onclick="document.getElementById('ocrInput').click()">
-      <div style="font-size:28px">📷</div>
-      <p><b>사업자등록증 사진 업로드</b><br>탭하면 자동으로 정보를 읽어옵니다</p>
-    </div>
+    <section class="ai-entry" aria-label="사업자등록증 사진으로 입력">
+      <div class="ai-entry-title">사업자등록증으로 입력</div>
+      <p>사진 선택·촬영 → AI 인식 → 원본 확인 후 입력<br>확인 전에는 작성 중인 내용을 바꾸지 않습니다.</p>
+      <div class="ai-entry-actions"><button type="button" class="btn btn-primary" onclick="document.getElementById('ocrInput').click()">사진 선택·촬영</button><button type="button" class="btn btn-outline" id="registration-connect">AI 계정 연결</button></div>
+    </section>
     <input type="file" id="ocrInput" accept="image/*" style="display:none" onchange="runOCR(this)"/>
     <div class="ocr-status" id="ocrStatus"></div>
     <div class="field"><label>상호명</label><input id="b_name" placeholder="예) 주식회사 비제이코리아"/></div>
@@ -326,81 +328,10 @@ const DAYS_KO=['일','월','화','수','목','금','토'];
 const HOLIDAYS=['2026-01-01','2026-01-28','2026-01-29','2026-01-30','2026-03-01','2026-05-05','2026-05-25','2026-06-06','2026-08-15','2026-09-24','2026-09-25','2026-09-26','2026-10-03','2026-10-09','2026-12-25'];
 let items=[], ctype='sell', art5='single', art8=true, asis=false;
 
-// Tesseract.js 동적 로드
-function loadTesseract(){
-  return new Promise((res,rej)=>{
-    if(window.Tesseract){res();return;}
-    const s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-    s.onload=res; s.onerror=rej;
-    document.head.appendChild(s);
-  });
-}
-
+// 사진 인식은 인증된 전용 API에서 처리하고 검토 후에만 네 항목에 반영한다.
 async function runOCR(input){
-  if(!input.files[0])return;
-  const st=document.getElementById('ocrStatus');
-  st.style.display='block'; st.style.background='#eef4ff'; st.style.color='#1a4a8a';
-  st.textContent='📷 사업자등록증 분석 중... (처음 실행 시 30초 정도 걸릴 수 있어요)';
-  try{
-    await loadTesseract();
-    const file=input.files[0];
-    const imgUrl=URL.createObjectURL(file);
-
-    // 한글+영문+숫자 인식
-    const result=await Tesseract.recognize(imgUrl,'kor+eng',{
-      logger: m=>{
-        if(m.status==='recognizing text'){
-          const pct=Math.round(m.progress*100);
-          st.textContent=`📷 인식 중... ${pct}%`;
-        }
-      }
-    });
-    URL.revokeObjectURL(imgUrl);
-
-    const text=result.data.text;
-    console.log('OCR 결과:', text);
-
-    // 사업자등록번호 추출 (000-00-00000 패턴)
-    const regMatch=text.match(/(\d{3}[\s\-]\d{2}[\s\-]\d{5})/);
-    if(regMatch){
-      let r=regMatch[1].replace(/[^0-9]/g,'');
-      if(r.length===10) r=r.slice(0,3)+'-'+r.slice(3,5)+'-'+r.slice(5);
-      document.getElementById('b_reg').value=r;
-    }
-
-    // 상호명 추출 (상호 또는 법인명 다음 텍스트)
-    const compMatch=text.match(/(?:상\s*호|법\s*인\s*명)[:\s]+([^\n]+)/);
-    if(compMatch) document.getElementById('b_name').value=compMatch[1].trim().replace(/\s+/g,' ');
-
-    // 대표자 추출
-    const repMatch=text.match(/(?:대\s*표\s*자|성\s*명)[:\s]+([^\n]+)/);
-    if(repMatch) document.getElementById('b_rep').value=repMatch[1].trim().replace(/\s+/g,' ').split(' ')[0];
-
-    // 주소 추출 (사업장 소재지)
-    const addrMatch=text.match(/(?:사업장\s*소재지|주\s*소)[:\s]+([^\n]+)/);
-    if(addrMatch) document.getElementById('b_addr').value=addrMatch[1].trim().replace(/\s+/g,' ');
-
-    const filled=[
-      document.getElementById('b_reg').value,
-      document.getElementById('b_name').value,
-      document.getElementById('b_rep').value,
-      document.getElementById('b_addr').value,
-    ].filter(Boolean).length;
-
-    if(filled>0){
-      st.style.background='#eefaf3'; st.style.color='#1a6b3c';
-      st.textContent=`✅ ${filled}개 항목 자동입력 완료! 내용을 확인하고 수정하세요.`;
-    } else {
-      st.style.background='#fff3e6'; st.style.color='#b35c00';
-      st.textContent='⚠️ 인식했지만 정보를 찾지 못했어요. 직접 입력해주세요.';
-    }
-  }catch(e){
-    console.error(e);
-    st.style.background='#fff3e6'; st.style.color='#b35c00';
-    st.textContent='⚠️ 인식 실패 — 직접 입력해주세요';
-  }
-  input.value='';
+  if(window.BusinessRegistration) return window.BusinessRegistration.pick(input);
+  input.value=''; alert('사진 입력 도구를 준비 중입니다. 잠시 후 다시 선택해 주세요.');
 }
 
 function getLastDay(m){return new Date(2026,m,0).getDate();}
@@ -1208,5 +1139,20 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').catch(e=>console.log(e));
 }
 </script>
+
+<dialog id="registration-review" class="reg-dialog" aria-labelledby="registration-review-title">
+  <div class="reg-head"><div><h2 id="registration-review-title">사업자등록증 확인</h2><p>원본과 인식 내용을 비교하고 필요한 항목만 적용하세요.</p></div><button type="button" class="reg-close" id="registration-review-close" aria-label="등록증 검토 닫기">×</button></div>
+  <div class="reg-body"><div id="registration-message" class="reg-message" role="status" aria-live="polite"></div><div class="reg-grid"><div class="reg-original"><figure><img id="registration-original" alt="선택한 사업자등록증 원본"><figcaption>원본 사진은 이 화면에서만 사용하며, 계약서나 앱 데이터베이스에 저장하지 않습니다.</figcaption></figure></div><div class="reg-fields"><div class="reg-field" id="reg-row-company"><div class="reg-field-label"><label><input type="checkbox" id="reg-use-company" checked> 상호명</label><span class="reg-flag" id="reg-flag-company"></span></div><input type="text" id="reg-company" maxlength="160" aria-label="확인할 상호명"></div>
+<div class="reg-field" id="reg-row-registrationNumber"><div class="reg-field-label"><label><input type="checkbox" id="reg-use-registrationNumber" checked> 사업자등록번호</label><span class="reg-flag" id="reg-flag-registrationNumber"></span></div><input type="text" id="reg-registrationNumber" maxlength="24" aria-label="확인할 사업자등록번호" inputmode="numeric"></div>
+<div class="reg-field" id="reg-row-address"><div class="reg-field-label"><label><input type="checkbox" id="reg-use-address" checked> 사업장 주소</label><span class="reg-flag" id="reg-flag-address"></span></div><textarea id="reg-address" maxlength="400" aria-label="확인할 사업장 주소"></textarea></div>
+<div class="reg-field" id="reg-row-representative"><div class="reg-field-label"><label><input type="checkbox" id="reg-use-representative" checked> 대표자 성명</label><span class="reg-flag" id="reg-flag-representative"></span></div><input type="text" id="reg-representative" maxlength="100" aria-label="확인할 대표자 성명"></div><div class="reg-warnings" id="registration-warnings"></div></div></div><p class="reg-privacy">사진은 기존 챗봇 서버를 거쳐 AI 제공사로 전송됩니다. 앱 서버는 원본과 추출 내용을 저장하지 않습니다. 개인정보가 불필요하게 보이면 사진 선택 전에 가려 주세요. 계약서 자동 저장·발송은 하지 않습니다.</p></div>
+  <div class="reg-foot"><label class="reg-confirm"><input type="checkbox" id="registration-confirm">원본과 입력 내용을 대조했습니다. 선택한 항목만 반영합니다.</label><div class="reg-buttons"><button type="button" class="btn btn-outline" id="registration-analyze">사진 다시 읽기</button><button type="button" class="btn btn-primary" id="registration-apply" disabled>확인한 내용 입력</button></div></div>
+</dialog>
+<dialog id="registration-login" class="reg-dialog reg-login" aria-labelledby="registration-login-title">
+  <div class="reg-head"><div><h2 id="registration-login-title">AI 기능 계정 연결</h2></div><button type="button" class="reg-close" id="registration-login-close" aria-label="AI 계정 연결 닫기">×</button></div>
+  <form id="registration-login-form" class="reg-body"><p class="reg-login-note" id="registration-connect-note">AI 기능에만 기존 대표·문과장 재고 앱 계정을 처음 한 번 연결합니다. 연결은 이 기기에 유지됩니다. 계약서 직접 작성에는 로그인이 필요하지 않습니다.</p><div class="field"><label for="registration-email">기존 계정 이메일</label><input type="email" id="registration-email" autocomplete="username" required placeholder="대표 또는 문과장 이메일"></div><div class="field"><label for="registration-password">비밀번호</label><input type="password" id="registration-password" autocomplete="current-password" required></div><div id="registration-login-message" class="reg-login-error" role="status"></div><button type="submit" id="registration-login-submit" class="btn btn-primary">이 기기 연결</button></form>
+</dialog>
+<script src="contract-draft.js?v=20261114-1"></script>
+<script type="module" src="registration-ai.js?v=20261114-1"></script>
 </body>
 </html>
