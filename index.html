@@ -15,7 +15,7 @@
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
-  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, orderBy, query } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
+  import { getFirestore, collection, getDocs, addDoc, setDoc, deleteDoc, doc, orderBy, query } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyBrgbq0u1HMR3f__MfQO9dFYFlVRpIHoHE",
@@ -32,6 +32,7 @@
   window._fbCollection = collection;
   window._fbGetDocs = getDocs;
   window._fbAddDoc = addDoc;
+  window._fbSetDoc = setDoc;
   window._fbDeleteDoc = deleteDoc;
   window._fbDoc = doc;
   window._fbOrderBy = orderBy;
@@ -107,6 +108,11 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
 .ocr-zone:hover{border-color:var(--accent);background:#f0f0f8}
 .ocr-zone p{font-size:12px;color:var(--muted);margin-top:4px}
 .ocr-status{display:none;text-align:center;padding:8px;font-size:13px;border-radius:8px;margin-bottom:8px}
+.header{padding-top:18px}
+@media (hover:none) and (pointer:coarse){.header{padding-top:calc(env(safe-area-inset-top,0px) + 30px)}}
+.list-q{width:100%;margin-bottom:10px}
+.no-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#eef1f5;color:#5b6675;white-space:nowrap}
+.ci-sub{margin-top:6px;display:flex;gap:6px}
 </style>
 </head>
 <body>
@@ -177,6 +183,7 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
       <div class="field"><label>계약금 (공급가 10%, 수정가능)</label><input id="deposit" placeholder="예) 2,000,000" oninput="fmtInput(this);calcBal()"/></div>
       <div class="field"><label>잔금 (자동)</label><input id="balance" readonly/></div>
     </div>
+    <div class="field"><label>계약일자</label><input id="c_date" type="date"/></div>
     <div class="field"><label>잔금 지급 시기</label>
       <select id="btiming"><option>상차 후 출발 전</option><option>출고 1일 전</option><option>납품 후 즉시</option><option>계약 당일</option><option>귀사 결재 조건</option><option>별도 협의</option></select>
     </div>
@@ -259,7 +266,7 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
   <div class="card" style="margin:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
       <div style="font-size:16px;font-weight:700;color:var(--text)">계약서 목록</div>
-      <button onclick="switchTab('write')" class="btn btn-outline" style="padding:7px 14px;font-size:12px">+ 새 계약서</button>
+      <button onclick="newContract()" class="btn btn-outline" style="padding:7px 14px;font-size:12px">+ 새 계약서</button>
     </div>
     <!-- 탭 -->
     <div style="display:flex;gap:6px;margin-bottom:10px">
@@ -278,6 +285,7 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
         <div id="list-month-count" style="font-size:20px;font-weight:700;color:var(--accent)">0건</div>
       </div>
     </div>
+    <input id="list_q" class="list-q" type="search" placeholder="🔍 회사명·품목·계약번호 검색" oninput="renderList()"/>
     <!-- 필터 -->
     <div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto">
       <button id="lf_all" onclick="setListFilter('all')" style="padding:5px 14px;border-radius:20px;border:1.5px solid var(--accent);background:var(--accent2);color:var(--accent);cursor:pointer;font-size:12px;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;font-weight:500">전체</button>
@@ -485,7 +493,7 @@ function calcBal(){
   const sum=items.reduce((a,it)=>a+(parseInt(it.pr)||0),0),grand=sum+Math.round(sum*0.1);
   document.getElementById('balance').value=(grand-rawNum('deposit')).toLocaleString()+'원';
 }
-function go(n){
+function _goRaw(n){
   if(n===1){
     const s=ctype==='sell';
     document.getElementById('s1title').textContent=s?'매수인(을) 정보':'매도인(갑) 정보';
@@ -503,7 +511,7 @@ function go(n){
 function buildSum(){
   const sum=items.reduce((a,it)=>a+(parseInt(it.pr)||0),0),vat=Math.round(sum*0.1),grand=sum+vat,dep=rawNum('deposit');
   const rows=[['종류',ctype==='sell'?'매도계약서':'매수계약서'],[ctype==='sell'?'매수인':'매도인',document.getElementById('b_name').value],['사업자번호',document.getElementById('b_reg').value],['주소',document.getElementById('b_addr').value],['대표자',document.getElementById('b_rep').value],['품목',items.map(it=>it.nm+(it.sp?' '+it.sp:'')).join(', ')],['공급가',sum.toLocaleString()+'원'],['VAT',vat.toLocaleString()+'원'],['총 매매대금',grand.toLocaleString()+'원'],['계약금',dep.toLocaleString()+'원'],['잔금',(grand-dep).toLocaleString()+'원'],['잔금지급',document.getElementById('btiming').value],['납품시기',getDelivery().text||'-'],['A/S',getAsText()],['제5조',art5==='double'?'배액 반환':'계약금 반환']];
-  document.getElementById('sumtbl').innerHTML=rows.map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+  document.getElementById('sumtbl').innerHTML=rows.map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')+`<tr><td>계약일자</td><td>${document.getElementById('c_date').value||'-'}</td></tr>`;
 }
 
 function kor(n){
@@ -543,6 +551,7 @@ function setListFilter(f){
 }
 
 function switchTab(t){
+  window._curEditId=null; window._curDocNo='';
   document.getElementById('tab-write').classList.toggle('active',t==='write');
   document.getElementById('tab-list').classList.toggle('active',t==='list');
   if(t==='list'){
@@ -562,97 +571,133 @@ function showList(){
 }
 
 // ── Firestore 연동 ─────────────────────────────────────
+const FS_BASE='https://firestore.googleapis.com/v1/projects/hwacheon-743b4/databases/(default)/documents/contracts';
+function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function todayISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fsVal(v){
+  if(!v) return null;
+  if('stringValue' in v) return v.stringValue;
+  if('integerValue' in v) return Number(v.integerValue);
+  if('doubleValue' in v) return v.doubleValue;
+  if('booleanValue' in v) return v.booleanValue;
+  if('timestampValue' in v) return v.timestampValue;
+  if('arrayValue' in v) return (v.arrayValue.values||[]).map(fsVal);
+  if('mapValue' in v){const o={};const f=v.mapValue.fields||{};for(const k in f)o[k]=fsVal(f[k]);return o;}
+  return null;
+}
+// 이미지(imgData)를 빼고 가벼운 목록만 받아온다
+async function restList(){
+  let out=[],tok='';
+  do{
+    const u=FS_BASE+'?pageSize=300&orderBy='+encodeURIComponent('savedAt desc')+'&'+['fileName','date','ctype','savedAt','docNo','formData'].map(f=>'mask.fieldPaths='+f).join('&')+(tok?'&pageToken='+encodeURIComponent(tok):'');
+    const r=await fetch(u); if(!r.ok) throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    (j.documents||[]).forEach(d=>{const o={};const f=d.fields||{};for(const k in f)o[k]=fsVal(f[k]);o._id=d.name.split('/').pop();out.push(o);});
+    tok=j.nextPageToken||'';
+  }while(tok);
+  return out;
+}
 async function getContracts(){
-  try{
-    if(!window._db) return JSON.parse(localStorage.getItem('contracts')||'[]');
-    const q = window._fbQuery(window._fbCollection(window._db,'contracts'), window._fbOrderBy('savedAt','desc'));
-    const snap = await window._fbGetDocs(q);
-    return snap.docs.map(d=>({...d.data(), _id:d.id}));
-  }catch(e){
-    console.error(e);
-    return JSON.parse(localStorage.getItem('contracts')||'[]');
+  try{ const l=await restList(); window._clist=l; return l; }
+  catch(e){
+    console.error('가벼운 목록 실패, 기본 방식으로 재시도',e);
+    try{
+      const q=window._fbQuery(window._fbCollection(window._db,'contracts'),window._fbOrderBy('savedAt','desc'));
+      const snap=await window._fbGetDocs(q);
+      const l=snap.docs.map(d=>({...d.data(),_id:d.id})); window._clist=l; return l;
+    }catch(e2){ console.error(e2); return window._clist||[]; }
   }
 }
-
-async function saveContract(item){
-  try{
-    if(!window._db){ 
-      const list=JSON.parse(localStorage.getItem('contracts')||'[]');
-      list.push(item); localStorage.setItem('contracts',JSON.stringify(list)); return;
-    }
-    await window._fbAddDoc(window._fbCollection(window._db,'contracts'), item);
-  }catch(e){ console.error(e); }
+// 저장: 실패하면 오류를 던진다 (성공 안내는 저장이 확인된 뒤에만)
+async function saveContract(item,id){
+  if(!window._db) throw new Error('데이터베이스에 연결되지 않았어요');
+  if(id){ await window._fbSetDoc(window._fbDoc(window._db,'contracts',id),item); return id; }
+  const ref=await window._fbAddDoc(window._fbCollection(window._db,'contracts'),item);
+  return ref.id;
 }
-
 async function deleteContractById(id){
-  try{
-    if(!window._db){
-      let list=JSON.parse(localStorage.getItem('contracts')||'[]');
-      list.splice(parseInt(id),1); localStorage.setItem('contracts',JSON.stringify(list)); return;
-    }
-    await window._fbDeleteDoc(window._fbDoc(window._db,'contracts',id));
-  }catch(e){ console.error(e); }
+  try{ await window._fbDeleteDoc(window._fbDoc(window._db,'contracts',id)); return true; }
+  catch(e){ console.error(e); alert('삭제에 실패했어요. 인터넷 연결을 확인해 주세요.'); return false; }
 }
-
+async function nextDocNo(now){
+  const ymd=now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0');
+  let list=[]; try{list=await restList();}catch(e){list=window._clist||[];}
+  const used=new Set(list.map(c=>c.docNo).filter(Boolean));
+  for(let n=1;n<500;n++){const no='CT-'+ymd+'-'+String(n).padStart(2,'0'); if(!used.has(no)) return no;}
+  return 'CT-'+ymd+'-'+(Date.now()%10000);
+}
+function cTotals(fd){
+  const sum=(fd.items||[]).reduce((a,it)=>a+(parseInt(it.pr)||0),0);
+  const vat=Math.round(sum*0.1), grand=sum+vat;
+  const dep=parseInt(String(fd.deposit||'').replace(/[^0-9]/g,''))||0;
+  return {sum,vat,grand,dep,bal:grand-dep};
+}
+function copyContractLedger(id){
+  const c=(window._clist||[]).find(x=>x._id===id); if(!c) return;
+  const fd=c.formData||{}; const t=cTotals(fd); const its=fd.items||[];
+  const first=its[0]?(its[0].nm+(its[0].sp?' '+its[0].sp:'')):'';
+  const dt=String(fd.c_date||'').split('-'); const md=dt.length===3?(+dt[1])+'/'+(+dt[2]):'';
+  const text=((c.ctype==='sell'?'[미수금] ':'[지급금] ')+(fd.b_name||'')+' '+first+(its.length>1?' 외 '+(its.length-1)+'건':'')+' 총 '+t.grand.toLocaleString('ko-KR')+'원(VAT포함) / 계약금 '+t.dep.toLocaleString('ko-KR')+'원 · 잔금 '+t.bal.toLocaleString('ko-KR')+'원 '+md).trim();
+  const done=()=>alert('복사했어요. 수금대장에 붙여 넣어 등록하세요.\n\n'+text);
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done,()=>alert('복사 권한이 없어 직접 복사해 주세요.\n\n'+text)); else alert('직접 복사해 주세요.\n\n'+text);
+}
 async function renderList(){
-  document.getElementById('contract-list').innerHTML='<div style="text-align:center;padding:20px;color:#555;font-size:13px">불러오는 중...</div>';
-  let list=await getContracts();
-  const now=new Date();
-  const thisMonth=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}`;
-  const weekAgo=new Date(now-7*24*60*60*1000);
-
-  // 탭 필터
-  if(listTab!=='all') list=list.filter(c=>c.ctype===listTab);
-
-  // 요약 업데이트
+  const el=document.getElementById('contract-list'), empty=document.getElementById('empty-list');
+  el.innerHTML='<div style="text-align:center;padding:20px;color:#555;font-size:13px">불러오는 중...</div>';
   const allList=await getContracts();
+  const now=new Date();
+  const thisMonth=now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0');
+  const weekAgo=new Date(now-7*24*60*60*1000);
   const tabList=listTab==='all'?allList:allList.filter(c=>c.ctype===listTab);
   document.getElementById('list-total-count').textContent=tabList.length+'건';
   document.getElementById('list-month-count').textContent=tabList.filter(c=>c.date&&c.date.startsWith(thisMonth)).length+'건';
-
-  // 기간 필터
-  if(listFilter==='month') list=list.filter(c=>c.date&&c.date.startsWith(thisMonth));
-  if(listFilter==='week') list=list.filter(c=>{
-    if(!c.savedAt) return false;
-    return new Date(c.savedAt)>=weekAgo;
-  });
-
-  const el=document.getElementById('contract-list');
-  const empty=document.getElementById('empty-list');
-
-  if(list.length===0){el.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-
-  el.innerHTML=list.filter(c=>{
-    if(listTab!=='all'&&c.ctype!==listTab) return false;
-    if(listFilter==='month') return c.date&&c.date.startsWith(thisMonth);
-    if(listFilter==='week') return c.savedAt&&new Date(c.savedAt)>=weekAgo;
+  const q=((document.getElementById('list_q')||{}).value||'').trim().toLowerCase();
+  const list=tabList.filter(c=>{
+    if(listFilter==='month'&&!(c.date&&c.date.startsWith(thisMonth))) return false;
+    if(listFilter==='week'&&!(c.savedAt&&new Date(c.savedAt)>=weekAgo)) return false;
+    if(q){
+      const fd=c.formData||{};
+      const hay=[c.fileName,c.docNo,fd.b_name,fd.b_reg].concat((fd.items||[]).map(i=>(i.nm||'')+' '+(i.sp||''))).join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
     return true;
-  }).map((c)=>{
+  });
+  if(list.length===0){el.innerHTML='';empty.style.display='block';empty.textContent=q?'검색 결과가 없습니다':'저장된 계약서가 없습니다';return;}
+  empty.style.display='none';
+  const isMob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  el.innerHTML=list.map(c=>{
     const typeLabel=c.ctype==='sell'?'매도':'매수';
     const typeColor=c.ctype==='sell'?'#c0392b':'#1a6b3c';
     const typeBg=c.ctype==='sell'?'#fdecea':'#eefaf3';
-    return `<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.04)">
+    return `<div style="padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.04)">
+      <div style="display:flex;align-items:center;gap:10px">
       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
+        <div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:3px">
           <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${typeBg};color:${typeColor};white-space:nowrap">${typeLabel}</span>
-          <span style="font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.fileName}</span>
+          <span style="font-size:13px;font-weight:500;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all;line-height:1.35">${escH(c.fileName)}</span>
         </div>
-        <div style="font-size:11px;color:var(--muted)">${c.date||''}</div>
+        <div style="font-size:11px;color:var(--muted)">${escH(c.date||'')} ${c.docNo?'<span class="no-pill">'+escH(c.docNo)+'</span>':''}</div>
       </div>
       <div style="display:flex;gap:5px;flex-shrink:0">
         <button onclick="loadAndEdit('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">수정</button>
-        <button onclick="viewContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">${/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)?'저장':'PDF'}</button>
+        <button onclick="viewContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">${isMob?'저장':'PDF'}</button>
         <button onclick="deleteContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid #fdecea;background:#fff;color:#c0392b;cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">삭제</button>
-      </div>
+      </div></div>
+      <div class="ci-sub"><button onclick="copyContractLedger('${c._id}')" style="padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:#fafaf8;color:var(--muted);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">수금대장용 복사</button></div>
     </div>`;
   }).join('');
 }
 
 async function viewContract(id){
-  const list=await getContracts();
-  const c=list.find(x=>x._id===id)||list[parseInt(id)];
-  if(!c) return;
+  const meta=(window._clist||[]).find(x=>x._id===id)||{};
+  let c;
+  try{
+    const r=await fetch(FS_BASE+'/'+id+'?mask.fieldPaths=imgData&mask.fieldPaths=fileName');
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const j=await r.json(); const f=j.fields||{};
+    c={fileName:(f.fileName&&f.fileName.stringValue)||meta.fileName||'계약서',imgData:f.imgData&&f.imgData.stringValue};
+  }catch(e){ console.error(e); alert('계약서를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'); return; }
+  if(!c.imgData){ alert('저장된 이미지가 없어요.'); return; }
   const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if(isMobile){
     // 모바일: 오버레이로 이미지 표시
@@ -663,7 +708,7 @@ async function viewContract(id){
         <span style="color:#fff;font-size:13px;flex:1;font-family:sans-serif">${c.fileName}</span>
         <button onclick="this.closest('div[style*=fixed]').remove()" style="background:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:sans-serif;font-weight:600">✕ 닫기</button>
       </div>
-      <div style="padding:10px;text-align:center;background:#333;font-size:12px;color:#fff;font-family:sans-serif">📥 이미지를 꾹 눌러서 저장하세요</div>
+      <div style="padding:10px;text-align:center;background:#333;font-size:12px;color:#fff;font-family:sans-serif">📥 이미지를 꾹 눌러 저장하거나 아래 버튼으로 저장·공유하세요<br><button onclick="shareContractImg(this)" style="margin-top:8px;background:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:sans-serif">📥 저장 / 공유</button></div>
       <img src="${c.imgData}" style="width:100%;display:block"/>
     `;
     document.body.appendChild(overlay);
@@ -692,7 +737,7 @@ async function viewContract(id){
 }
 
 async function loadAndEdit(id){
-  const list=await getContracts();
+  const list=(window._clist&&window._clist.length)?window._clist:await getContracts();
   const c=list.find(x=>x._id===id);
   if(!c||!c.formData){alert('이 계약서는 수정 데이터가 없어요.\n(새로 저장한 계약서부터 수정 가능합니다)');return;}
   const d=c.formData;
@@ -719,12 +764,16 @@ async function loadAndEdit(id){
   art5=d.art5||'single';
   pickAsis(d.asis===true);
   calcAll();
+  if(d.deposit!==undefined&&d.deposit!==''){document.getElementById('deposit').value=d.deposit;calcBal();window._depEdited=true;}
+  document.getElementById('c_date').value=d.c_date||todayISO();
+  window._curEditId=id; window._curDocNo=c.docNo||'';
   go(1);
 }
 
 function getFormData(){
   return {
     ctype,
+    c_date:document.getElementById('c_date').value,
     b_name:document.getElementById('b_name').value,
     b_reg:document.getElementById('b_reg').value,
     b_addr:document.getElementById('b_addr').value,
@@ -750,8 +799,63 @@ async function deleteContract(id){
   renderList();
 }
 
+function _grand(){const sum=items.reduce((a,it)=>a+(parseInt(it.pr)||0),0);return sum+Math.round(sum*0.1);}
+function _validateStep(cur){
+  if(cur===1){
+    const nm=document.getElementById('b_name').value.trim(), reg=document.getElementById('b_reg').value.trim();
+    if(!nm){alert('상호명을 입력해 주세요.');return false;}
+    if(reg&&!/^\d{3}-\d{2}-\d{5}$/.test(reg)){alert('사업자등록번호는 10자리(000-00-00000)로 입력해 주세요.');return false;}
+    const miss=[];
+    if(!reg)miss.push('사업자등록번호');
+    if(!document.getElementById('b_addr').value.trim())miss.push('주소');
+    if(!document.getElementById('b_rep').value.trim())miss.push('대표자 성명');
+    if(miss.length&&!confirm(miss.join(', ')+'이(가) 비어 있어요.\n비워 둔 채 계속할까요?'))return false;
+  }
+  if(cur===2){
+    if(document.getElementById('i_nm').value.trim()){ if(confirm('입력 중인 품목이 아직 추가되지 않았어요.\n추가할까요?')) addItem(); }
+    if(!items.length){alert('품목을 1개 이상 추가해 주세요.');return false;}
+  }
+  if(cur===3){
+    if(rawNum('deposit')>_grand()){alert('계약금이 총 매매대금(VAT포함)보다 클 수 없어요.');return false;}
+  }
+  return true;
+}
+function go(n){
+  const act=document.querySelector('.step.active');
+  const cur=act?(parseInt(act.id.slice(1))||0):0;
+  if(n>cur&&cur>=1&&cur<=3&&!_validateStep(cur)) return;
+  const keep=(n===3&&window._depEdited)?document.getElementById('deposit').value:null;
+  _goRaw(n);
+  if(keep!==null){document.getElementById('deposit').value=keep;calcBal();}
+}
+function shareContractImg(btn){
+  const ov=btn.closest('div[style*=fixed]'); const img=ov.querySelector('img'); const name=((ov.querySelector('span')||{}).textContent||'계약서').trim();
+  (async()=>{
+    try{
+      const blob=await (await fetch(img.src)).blob(); const file=new File([blob],name+'.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return;}
+    }catch(e){ if(e&&e.name==='AbortError') return; }
+    const a=document.createElement('a'); a.href=img.src; a.download=name+'.png'; document.body.appendChild(a); a.click(); a.remove();
+  })();
+}
+function newContract(){
+  window._curEditId=null; window._curDocNo=''; window._depEdited=false; window._lastSavedSig=null;
+  items=[]; renderItems();
+  ['b_name','b_reg','b_addr','b_rep','deposit','d_month','d_custom'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('c_date').value=todayISO();
+  document.getElementById('d_day').value='말일'; document.getElementById('d_within').value='이내'; document.getElementById('asper').value='없음';
+  pickSangcha('상차도 조건'); pickArt5('single'); pickArt8(true); pickAsis(false);
+  calcAll(); switchTab('write');
+}
 async function saveAndPDF(){
-  await generatePDF(true);
+  if(window._busy) return;
+  window._busy=true;
+  try{
+    if(!document.getElementById('b_name').value.trim()){alert('상호명을 입력해 주세요.');return;}
+    if(!items.length){alert('품목을 1개 이상 추가해 주세요.');return;}
+    if(rawNum('deposit')>_grand()){alert('계약금이 총 매매대금(VAT포함)보다 클 수 없어요.');return;}
+    await generatePDF(true);
+  } finally { window._busy=false; }
 }
 
 async function generatePDF(save=false){
@@ -760,7 +864,7 @@ async function generatePDF(save=false){
   const HQ={name:'화천이티씨',reg:'483-26-00262',addr:'충남 아산시 배방읍 휴대길 167',rep:'문형록'};
   const OT={name:document.getElementById('b_name').value,reg:document.getElementById('b_reg').value,addr:document.getElementById('b_addr').value,rep:document.getElementById('b_rep').value};
   const seller=isSell?HQ:OT, buyer=isSell?OT:HQ;
-  const today=new Date(),cdate=`${today.getFullYear()}년 ${String(today.getMonth()+1).padStart(2,'0')}월 ${String(today.getDate()).padStart(2,'0')}일`;
+  const today=(()=>{const v=document.getElementById('c_date').value;return v?new Date(v+'T00:00:00'):new Date();})(),cdate=`${today.getFullYear()}년 ${String(today.getMonth()+1).padStart(2,'0')}월 ${String(today.getDate()).padStart(2,'0')}일`;
   const delivery=getDelivery().text||'-', asText=getAsText();
   const art5txt=art5==='double'?'"을"은 계약금을 포기하고, "갑"은 계약금의 배액을 반환한다.':'"을"은 계약금을 포기하고, "갑"은 계약금을 반환한다.';
 
@@ -992,7 +1096,7 @@ async function generatePDF(save=false){
         <span style="color:#fff;font-size:13px;flex:1;font-family:sans-serif">${fileName}</span>
         <button onclick="this.closest('div[style*=fixed]').remove()" style="background:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:sans-serif;font-weight:600">✕ 닫기</button>
       </div>
-      <div style="padding:10px;text-align:center;background:#333;font-size:12px;color:#fff;font-family:sans-serif">📥 이미지를 꾹 눌러서 저장하세요</div>
+      <div style="padding:10px;text-align:center;background:#333;font-size:12px;color:#fff;font-family:sans-serif">📥 이미지를 꾹 눌러 저장하거나 아래 버튼으로 저장·공유하세요<br><button onclick="shareContractImg(this)" style="margin-top:8px;background:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:sans-serif">📥 저장 / 공유</button></div>
       <img src="${imgData}" style="width:100%;display:block"/>
     `;
     document.body.appendChild(overlay);
@@ -1009,12 +1113,22 @@ async function generatePDF(save=false){
   if(save){
     const now=new Date();
     const dateStr=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const fd=getFormData();
+    const sig=JSON.stringify(fd);
+    if(!window._curEditId && window._lastSavedSig===sig){
+      setTimeout(()=>alert('이미 저장된 계약서예요.\n(같은 내용은 다시 저장하지 않아요)'),400);
+      return;
+    }
     try{
-      await saveContract({fileName,date:dateStr,ctype,savedAt:now.getTime(),imgData,formData:getFormData()});
-      setTimeout(()=>alert('✅ 목록에 저장됐어요!'),500);
+      const editId=window._curEditId||null;
+      const docNo=(editId&&window._curDocNo)?window._curDocNo:await nextDocNo(now);
+      await saveContract({fileName,date:dateStr,ctype,savedAt:now.getTime(),docNo,imgData,formData:fd},editId);
+      window._lastSavedSig=sig; if(editId) window._curDocNo=docNo;
+      setTimeout(()=>alert('✅ 목록에 저장됐어요!\n계약번호: '+docNo),500);
     }catch(e){
       console.error('저장 오류:',e);
-      alert('저장 중 오류가 발생했어요: '+e.message);
+      try{localStorage.setItem('contract_unsaved_'+Date.now(),JSON.stringify(fd));}catch(_){}
+      setTimeout(()=>alert('❌ 저장에 실패했어요.\n인터넷 연결을 확인하고 [PDF 저장 및 목록에 보관]을 다시 눌러 주세요.\n(입력한 내용은 그대로 남아 있어요)'),500);
     }
   }
 }
@@ -1057,6 +1171,10 @@ function drawTable(ctx,x,y,cols,rows,footRows=[],scale=1){
   });
   return y;
 }
+</script>
+<script>
+document.getElementById('c_date').value=todayISO();
+document.getElementById('deposit').addEventListener('input',()=>{window._depEdited=true;});
 </script>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js");}</script>
 
