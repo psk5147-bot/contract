@@ -112,7 +112,6 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
 @media (hover:none) and (pointer:coarse){.header{padding-top:calc(env(safe-area-inset-top,0px) + 30px)}}
 .list-q{width:100%;margin-bottom:10px}
 .no-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#eef1f5;color:#5b6675;white-space:nowrap}
-.ci-sub{margin-top:6px;display:flex;gap:6px}
 </style>
 </head>
 <body>
@@ -632,15 +631,6 @@ function cTotals(fd){
   const dep=parseInt(String(fd.deposit||'').replace(/[^0-9]/g,''))||0;
   return {sum,vat,grand,dep,bal:grand-dep};
 }
-function copyContractLedger(id){
-  const c=(window._clist||[]).find(x=>x._id===id); if(!c) return;
-  const fd=c.formData||{}; const t=cTotals(fd); const its=fd.items||[];
-  const first=its[0]?(its[0].nm+(its[0].sp?' '+its[0].sp:'')):'';
-  const dt=String(fd.c_date||'').split('-'); const md=dt.length===3?(+dt[1])+'/'+(+dt[2]):'';
-  const text=((c.ctype==='sell'?'[미수금] ':'[지급금] ')+(fd.b_name||'')+' '+first+(its.length>1?' 외 '+(its.length-1)+'건':'')+' 총 '+t.grand.toLocaleString('ko-KR')+'원(VAT포함) / 계약금 '+t.dep.toLocaleString('ko-KR')+'원 · 잔금 '+t.bal.toLocaleString('ko-KR')+'원 '+md).trim();
-  const done=()=>alert('복사했어요. 수금대장에 붙여 넣어 등록하세요.\n\n'+text);
-  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done,()=>alert('복사 권한이 없어 직접 복사해 주세요.\n\n'+text)); else alert('직접 복사해 주세요.\n\n'+text);
-}
 async function renderList(){
   const el=document.getElementById('contract-list'), empty=document.getElementById('empty-list');
   el.innerHTML='<div style="text-align:center;padding:20px;color:#555;font-size:13px">불러오는 중...</div>';
@@ -683,7 +673,6 @@ async function renderList(){
         <button onclick="viewContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">${isMob?'저장':'PDF'}</button>
         <button onclick="deleteContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid #fdecea;background:#fff;color:#c0392b;cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">삭제</button>
       </div></div>
-      <div class="ci-sub"><button onclick="copyContractLedger('${c._id}')" style="padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:#fafaf8;color:var(--muted);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">수금대장용 복사</button></div>
     </div>`;
   }).join('');
 }
