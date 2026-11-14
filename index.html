@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>계약서 관리</title>
 <link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#1a1a2e"/>
+<meta name="theme-color" content="#1a3a5c"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -113,6 +113,29 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
 .list-q{width:100%;margin-bottom:10px}
 .no-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#eef1f5;color:#5b6675;white-space:nowrap}
 </style>
+
+<style id="business-app-theme-20261114">
+:root{--bg:#f5f5f3;--card:#fff;--border:#dfe3e8;--text:#1a1a1a;--muted:#68717d;--accent:#1a3a5c;--accent2:#edf3f8;--radius:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;font-size:14px;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.header{background:var(--accent);padding:18px 20px 14px;box-shadow:none}
+.header>div{max-width:1060px;margin:auto}.header h1{font-size:18px;letter-spacing:-.4px}.header p{font-size:12px;opacity:.8;line-height:1.6;margin-top:5px}
+.prog-wrap{background:var(--accent);padding:0 20px 18px}.prog{max-width:1060px;margin:auto;gap:7px}.pip{height:4px;background:#ffffff30}.pip.on{background:#e8b84b}
+body:has(#s6.active) .prog-wrap,body:has(#s0.active) .prog-wrap{display:none}body:has(#s6.active) #ctype-label{display:none}
+.content{width:100%;max-width:1100px;margin:0 auto;padding:20px}
+.card{border-color:var(--border);box-shadow:0 1px 3px #172b4d06;padding:20px;margin-bottom:16px;border-radius:12px}
+.card-title{font-size:14px;letter-spacing:0;text-transform:none;color:var(--accent);font-weight:700;margin-bottom:18px;padding-bottom:12px;border-color:#edf0f3}
+.field{margin-bottom:16px;min-width:0}label{font-size:13px;color:#525d6a;margin-bottom:7px;line-height:1.5}
+input,select{min-width:0;min-height:46px;font-size:16px;padding:11px 12px;border:1px solid #d7dde4;border-radius:8px;background:#fff;font-family:inherit;line-height:1.4}input:focus,select:focus{border-color:#2d5f8a;box-shadow:0 0 0 3px #2d5f8a15}input[readonly]{background:#f4f6f8;color:#525d6a}
+button{font-family:inherit}.btn{min-height:46px;font-size:14px;border-radius:8px;font-weight:600}.btn-primary,.btn-next,.btn-pdf{background:var(--accent);color:#fff}.btn-next{border-color:var(--accent)!important;background:var(--accent)!important;color:#fff!important}.btn-outline{border:1px solid #d7dde4}.btn-add{background:#edf3f8;border:1px solid #d7e2ed;color:var(--accent)}.btn:active{transform:translateY(1px)}button:focus-visible,.type-card:focus-visible{outline:3px solid #2d5f8a55;outline-offset:3px}
+.type-grid{gap:14px}.type-card{position:relative;display:flex;align-items:center;gap:16px;min-height:124px;padding:22px 20px;text-align:left;border:1px solid #d7dde4;background:#fff;border-radius:12px;font-family:inherit;color:var(--text);width:100%}.type-card.sel{border:2px solid var(--accent);padding:21px 19px;background:#edf3f8}.type-card.sel::after{content:'선택됨';position:absolute;right:16px;top:12px;font-size:11px;color:var(--accent);font-weight:700}.type-icon{width:44px;height:44px;padding:11px;background:#f1f4f7;border-radius:10px;color:var(--accent);flex-shrink:0}.type-card.sel .type-icon{background:#dfe9f3}.tc-title{font-size:17px;margin-bottom:6px;letter-spacing:-.3px}.tc-sub{font-size:12px;line-height:1.6}.start-guide{font-size:13px;color:var(--muted);line-height:1.8;margin-top:16px}.brow{gap:12px;margin-top:20px}
+.notice{background:#edf3f8;border:1px solid #dde7f1;color:#536477;padding:12px 14px;font-size:13px}.notice b{color:var(--accent)}.radio-opt{background:#fff;border:1px solid #d7dde4;min-height:46px;display:flex;align-items:center;justify-content:center;line-height:1.5}.radio-opt.sel{background:#edf3f8;border-color:var(--accent);color:var(--accent);font-weight:600}.info-box{padding:12px 14px;line-height:1.8}.ocr-zone{background:#f7f9fb;border:1px dashed #b9c6d4;padding:20px}.ocr-zone:hover{background:#edf3f8;border-color:var(--accent)}.ocr-zone p{font-size:13px}.item-row{background:#f7f9fb;border-color:#e3e8ee;padding:14px}.ir-info{min-width:0;overflow-wrap:anywhere}.ir-name{font-size:15px;font-weight:600}.ir-sub{font-size:12px;margin-top:3px}.sum-table td{padding:12px 6px;overflow-wrap:anywhere}.sum-table td:first-child{font-size:13px}.sum-table td:last-child{font-size:14px}
+#s6>.card{margin:0!important}#s6>.card>div:first-child{gap:12px;padding-bottom:16px!important;margin-bottom:16px!important}#s6>.card>div:first-child>.btn{flex:0 0 auto!important;min-height:40px;font-size:13px!important;padding:8px 14px!important;background:var(--accent);color:#fff;border-color:var(--accent)}
+#s6 button[id^="lt_"]{min-height:44px;font-size:14px!important;border-radius:8px}#s6 button[id^="lf_"]{min-height:38px;font-size:13px!important}.list-q{margin:4px 0 14px;background:#f8fafb}
+#contract-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#contract-list>div{padding:16px!important;border-radius:10px!important;margin:0!important;box-shadow:none!important;min-width:0}#contract-list>div>div{flex-direction:column;align-items:stretch!important;gap:14px!important}#contract-list>div>div>div:first-child>div:first-child{gap:8px!important;margin-bottom:8px!important}#contract-list>div>div>div:first-child>div:first-child>span:last-child{font-size:15px!important;font-weight:600!important;line-height:1.6!important;word-break:normal!important;overflow-wrap:anywhere;-webkit-line-clamp:3!important}#contract-list>div>div>div:first-child>div:last-child{font-size:12px!important;line-height:1.8}#contract-list>div>div>div:last-child{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;flex-shrink:1!important;padding-top:12px;border-top:1px solid #eef1f4}#contract-list button{min-height:40px;font-size:13px!important;border-width:1px!important;font-family:inherit!important}#contract-list button:nth-child(2){background:#edf3f8!important;border-color:#d5e0eb!important;color:var(--accent)!important;font-weight:600}.no-pill{font-size:11px;padding:3px 7px;background:#eef2f6}
+.tab-bar{background:#fff;border-top:1px solid #dfe3e8;box-shadow:0 -3px 14px #172b4d05;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}.tab-btn{position:relative;max-width:550px;min-height:58px;padding:14px 20px;flex-direction:row;justify-content:center;gap:9px;font-size:14px;font-family:inherit;font-weight:600;color:#727c88}.tab-btn.active{color:var(--accent);background:#f4f7fb}.tab-btn.active:before{content:'';position:absolute;left:25%;right:25%;top:0;height:3px;background:var(--accent);border-radius:0 0 3px 3px}.tab-icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media(min-width:900px){#s0,#s1,#s2,#s3,#s4,#s5{max-width:800px;margin:auto}.header{padding-top:20px}.content{padding-top:24px}}
+@media(max-width:600px){.content{padding:16px 14px}.card{padding:17px 15px}.header{padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 14px}.header h1{font-size:18px}.type-grid{grid-template-columns:1fr}.type-card{min-height:108px;padding:20px}.type-card.sel{padding:19px}.start-guide{font-size:12px}.r2{gap:12px}.r3{grid-template-columns:repeat(3,minmax(0,1fr))}#s2 .r3{grid-template-columns:1fr 1fr}#s2 .r3>.field:first-child{grid-column:1/-1}#s2 .r3>.field:nth-child(3) select{width:64px!important;font-size:14px!important}#s2 .r2{grid-template-columns:1fr}.radio-row{gap:8px}.radio-opt{font-size:12px;padding:10px 8px}.sum-table td:first-child{width:34%}#contract-list{grid-template-columns:1fr}#s6>.card{padding:16px 13px}#contract-list>div{padding:14px!important}}
+</style>
 </head>
 <body>
 <div class="header">
@@ -127,8 +150,8 @@ input[readonly]{background:#f0ede8;color:var(--muted)}
 <div class="step active" id="s0">
   <div class="card"><div class="card-title">계약서 종류</div>
     <div class="type-grid">
-      <div class="type-card sel" id="tb_sell" onclick="setType('sell')"><div class="tc-title">매도계약서</div><div class="tc-sub">화천이티씨 = 판매자(갑)</div></div>
-      <div class="type-card" id="tb_buy" onclick="setType('buy')"><div class="tc-title">매수계약서</div><div class="tc-sub">화천이티씨 = 구매자(을)</div></div>
+      <button type="button" class="type-card sel" id="tb_sell" aria-label="매도계약서, 화천이티씨가 판매자" onclick="setType('sell')"><svg class="type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/><path d="M12 4v11M7 9l5 -5 5 5"/></svg><div><div class="tc-title">매도계약서</div><div class="tc-sub">화천이티씨 = 판매자(갑)</div></div></button>
+      <button type="button" class="type-card" id="tb_buy" aria-label="매수계약서, 화천이티씨가 구매자" onclick="setType('buy')"><svg class="type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/><path d="M12 4v11M7 9l5 5 5 -5"/></svg><div><div class="tc-title">매수계약서</div><div class="tc-sub">화천이티씨 = 구매자(을)</div></div></button>
     </div>
   </div>
   <button class="btn btn-primary" onclick="go(1)">다음 →</button>
@@ -1174,10 +1197,10 @@ document.getElementById('deposit').addEventListener('input',()=>{window._depEdit
 <!-- 하단 탭바 -->
 <div class="tab-bar">
   <button class="tab-btn active" id="tab-write" onclick="switchTab('write')">
-    <span>📝</span>작성
+    <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4l6 6M4 20l5-1L20 8a2 2 0 0 0-4-4L5 15z"/></svg>작성
   </button>
   <button class="tab-btn" id="tab-list" onclick="switchTab('list')">
-    <span>📋</span>목록
+    <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>목록
   </button>
 </div>
 <script>
