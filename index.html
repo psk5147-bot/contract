@@ -880,7 +880,7 @@ async function renderList(){
   /* 도구: 상태 칩, 정렬, 중복 */
   const stChips=[['all','전체 상태'],['none','미지정'],['sign','계약 중'],['dep','계약금'],['paid','잔금'],['done','완료']].map(a=>'<button class="'+(listStatus===a[0]?'on':'')+'" onclick="setListStatus(\''+a[0]+'\')">'+a[1]+(stCnt[a[0]]?' <em>'+stCnt[a[0]]+'</em>':'')+'</button>').join('');
   const sorts=[['new','최신순'],['amt','금액순'],['name','거래처별']].map(a=>'<button class="'+(listSort===a[0]?'on':'')+'" onclick="setListSort(\''+a[0]+'\')">'+a[1]+'</button>').join('');
-  document.getElementById('ct-tools').innerHTML='<div class="ct-chips">'+stChips+'</div><div class="ct-toolrow"><div class="ct-sort">'+sorts+'</div>'+((dupCnt||emptyCnt)?'<label class="ct-dup" onclick="toggleHideDup()"><i class="'+(hideDup?'on':'')+'"></i>이전 저장본·빈 계약서 숨기기 ('+(dupCnt+emptyCnt)+')</label>':'')+'</div>';
+  document.getElementById('ct-tools').innerHTML='<div class="ct-toolrow"><div class="ct-sort">'+sorts+'</div>'+((dupCnt||emptyCnt)?'<label class="ct-dup" onclick="toggleHideDup()"><i class="'+(hideDup?'on':'')+'"></i>이전 저장본·빈 계약서 숨기기 ('+(dupCnt+emptyCnt)+')</label>':'')+'</div>';
   if(shown.length===0){el.innerHTML='';empty.style.display='block';empty.textContent=q?'검색 결과가 없습니다':'저장된 계약서가 없습니다';return;}
   empty.style.display='none';
   const arr=shown.slice();
@@ -891,7 +891,7 @@ async function renderList(){
   const card=x=>{
     const c=x.c,sell=x.type==='sell';
     const badges=(x.dup?'<span class="ct-b warn">이전 저장본</span>':'')+(x.empty?'<span class="ct-b warn">내용 없음</span>':'')+((!x.empty&&x.t.grand>0&&x.t.dep===0)?'<span class="ct-b">계약금 없음</span>':'');
-    return '<div class="ct-card'+((x.dup||x.empty)?' faded':'')+'"><div class="ct-top"><span class="ct-type '+(sell?'sell':'buy')+'">'+(sell?'매도':'매수')+'</span><button class="ct-st s-'+(c.status||'none')+'" onclick="ctStatusMenu(\''+c._id+'\')">'+ctStLabel(c.status,x.type)+' ▾</button></div>'
+    return '<div class="ct-card'+((x.dup||x.empty)?' faded':'')+'"><div class="ct-top"><span class="ct-type '+(sell?'sell':'buy')+'">'+(sell?'매도':'매수')+'</span></div>'
       +'<div class="ct-name">'+(escH(x.name)||'<span class="ct-nn">거래처 미입력</span>')+'</div>'
       +(x.itemTxt?'<div class="ct-item">'+escH(x.itemTxt)+'</div>':'')
       +(x.t.grand>0?'<div class="ct-amt">'+ctWon(x.t.grand)+'<small>VAT 포함</small></div><div class="ct-sub">계약금 '+(x.t.dep?ctWon(x.t.dep):'없음')+' · 잔금 '+ctWon(x.t.bal)+'</div>':'<div class="ct-sub">금액 정보 없음</div>')
