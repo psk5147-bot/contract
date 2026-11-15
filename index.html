@@ -189,7 +189,7 @@ button{font-family:inherit}.btn{min-height:46px;font-size:14px;border-radius:8px
 .ct-sheet button{border:1px solid #d5dcea;background:#fff;border-radius:12px;padding:13px;font-size:15px;color:#1a2540;cursor:pointer;font-family:inherit;min-height:48px}
 .ct-sheet button.on{background:#0b3d91;color:#fff;border-color:#0b3d91;font-weight:700}.ct-sheet button.cancel{border:none;color:#7b88a0}
 .ct-toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);background:#0b2e6f;color:#fff;padding:10px 18px;border-radius:99px;font-size:13px;opacity:0;transition:.3s;z-index:400;pointer-events:none}.ct-toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:600px){.ct-hero{padding:18px}.ct-hero-n{font-size:26px}.ct-hero-r{width:100%;flex-wrap:wrap}.ct-kpi{flex:1 1 calc(50% - 5px);min-width:0}.ct-hero-r .ct-kpi:first-child{flex-basis:100%}.ct-grid{grid-template-columns:1fr}.ct-h1{font-size:24px}}
+@media(max-width:600px){.ct-hero{padding:18px}.ct-hero-n{font-size:26px}.ct-hero-r{width:100%;flex-wrap:wrap}.ct-kpi{flex:1 1 calc(50% - 5px);min-width:0}.ct-grid{grid-template-columns:1fr}.ct-h1{font-size:24px}}
 </style>
 <link rel="stylesheet" href="registration-ai.css?v=20261114-1">
 <style id="sugeum-design-unify-20261116">
@@ -876,7 +876,7 @@ async function renderList(){
   const monthV=valid.filter(x=>x.c.date&&x.c.date.startsWith(thisMonth)), coN=new Set(valid.map(x=>x.name).filter(Boolean)).size;
   document.getElementById('ct-hero').innerHTML='<div class="ct-hero"><div><div class="ct-hero-l">총 계약금액 <small>VAT 포함 · 중복 제외</small></div><div class="ct-hero-n">'+ctWon(sum(valid))+'</div>'
     +'<div class="ct-hero-s"><span>계약 <b>'+valid.length+'건</b></span><span>매도 <b>'+ctK(sum(sellV))+'원</b> ('+sellV.length+')</span><span>매수 <b>'+ctK(sum(buyV))+'원</b> ('+buyV.length+')</span></div></div>'
-    +'<div class="ct-hero-r"><div class="ct-kpi"><span>이번 달 계약</span><b>'+(monthV.length?monthV.length+'건 · '+ctK(sum(monthV)):'-')+'</b></div><div class="ct-kpi"><span>거래처</span><b>'+(coN?coN+'곳':'-')+'</b></div><div class="ct-kpi"><span>상태 미지정</span><b class="'+(noSt?'dn':'up')+'">'+noSt+'건</b></div></div></div>';
+    +'<div class="ct-hero-r"><div class="ct-kpi"><span>이번 달 계약</span><b>'+(monthV.length?monthV.length+'건 · '+ctK(sum(monthV)):'-')+'</b></div><div class="ct-kpi"><span>거래처</span><b>'+(coN?coN+'곳':'-')+'</b></div></div></div>';
   /* 도구: 상태 칩, 정렬, 중복 */
   const stChips=[['all','전체 상태'],['none','미지정'],['sign','계약 중'],['dep','계약금'],['paid','잔금'],['done','완료']].map(a=>'<button class="'+(listStatus===a[0]?'on':'')+'" onclick="setListStatus(\''+a[0]+'\')">'+a[1]+(stCnt[a[0]]?' <em>'+stCnt[a[0]]+'</em>':'')+'</button>').join('');
   const sorts=[['new','최신순'],['amt','금액순'],['name','거래처별']].map(a=>'<button class="'+(listSort===a[0]?'on':'')+'" onclick="setListSort(\''+a[0]+'\')">'+a[1]+'</button>').join('');
