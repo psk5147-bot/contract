@@ -519,6 +519,19 @@ function kor(n){
 }
 
 // ── PDF 생성 ─────────────────────────────────────────────────────
+function switchTab(t){
+  window._curEditId=null; window._curDocNo='';
+  document.getElementById('tab-write').classList.toggle('active',t==='write');
+  document.getElementById('tab-list').classList.toggle('active',t==='list');
+  if(t==='list'){
+    showList();
+  } else {
+    document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    document.getElementById('s0').classList.add('active');
+    window.scrollTo(0,0);
+  }
+}
+
 function showList(){
   renderList();
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
