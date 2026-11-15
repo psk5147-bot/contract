@@ -136,6 +136,61 @@ button{font-family:inherit}.btn{min-height:46px;font-size:14px;border-radius:8px
 @media(min-width:900px){#s0,#s1,#s2,#s3,#s4,#s5{max-width:800px;margin:auto}.header{padding-top:20px}.content{padding-top:24px}}
 @media(max-width:600px){.content{padding:16px 14px}.card{padding:17px 15px}.header{padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 14px}.header h1{font-size:18px}.type-grid{grid-template-columns:1fr}.type-card{min-height:108px;padding:20px}.type-card.sel{padding:19px}.start-guide{font-size:12px}.r2{gap:12px}.r3{grid-template-columns:repeat(3,minmax(0,1fr))}#s2 .r3{grid-template-columns:1fr 1fr}#s2 .r3>.field:first-child{grid-column:1/-1}#s2 .r3>.field:nth-child(3) select{width:64px!important;font-size:14px!important}#s2 .r2{grid-template-columns:1fr}.radio-row{gap:8px}.radio-opt{font-size:12px;padding:10px 8px}.sum-table td:first-child{width:34%}#contract-list{grid-template-columns:1fr}#s6>.card{padding:16px 13px}#contract-list>div{padding:14px!important}}
 </style>
+<style id="ct-list-20261115">
+/* ===== 계약서 목록 개편 (남색 통일) ===== */
+#s6>.card.ct-wrap{background:transparent;border:none;box-shadow:none;padding:0!important}
+.ct-head{display:flex;align-items:flex-end;justify-content:space-between;margin:2px 2px 14px}
+.ct-eyebrow{font-size:12px;color:#5b6b86;font-weight:500}
+.ct-h1{font-size:26px;font-weight:700;color:#0b2e6f;letter-spacing:-1px}
+.ct-new{border:none;background:#0b3d91;color:#fff;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;min-height:40px}
+.ct-seg{display:flex;background:#e9edf4;border-radius:999px;padding:4px;margin-bottom:12px}
+.ct-seg button{flex:1;border:none;background:none;padding:10px 0;border-radius:999px;font-size:14px;color:#51607a;font-weight:500;cursor:pointer;font-family:inherit;min-height:40px}
+.ct-seg button.on{background:#0b3d91;color:#fff;font-weight:700}
+.ct-hero{display:flex;gap:18px;justify-content:space-between;align-items:stretch;flex-wrap:wrap;background:linear-gradient(135deg,#0a2a66 0%,#0b3d91 55%,#1d58c9 100%);border-radius:20px;padding:22px 24px;color:#fff;box-shadow:0 10px 30px rgba(11,61,145,.25);margin-bottom:14px}
+.ct-hero-l{font-size:13px;opacity:.85;margin-bottom:6px}.ct-hero-l small{font-size:11px;opacity:.7;margin-left:4px}
+.ct-hero-n{font-size:32px;font-weight:700;letter-spacing:-1.2px;line-height:1.1}
+.ct-hero-s{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:12px;font-size:12px;opacity:.92}.ct-hero-s b{font-weight:700}
+.ct-hero-r{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.ct-kpi{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 14px;min-width:96px;display:flex;flex-direction:column;gap:3px}
+.ct-kpi span{font-size:11px;opacity:.8}.ct-kpi b{font-size:16px;font-weight:700;letter-spacing:-.4px}.ct-kpi b.up{color:#9ff0c4}.ct-kpi b.dn{color:#ffd48a}
+.ct-chips{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}.ct-chips::-webkit-scrollbar{display:none}
+.ct-chips button{flex:none;border:1px solid #d5dcea;background:#fff;color:#51607a;border-radius:999px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit;min-height:36px}
+.ct-chips button.on{background:#0b3d91;border-color:#0b3d91;color:#fff;font-weight:700}
+.ct-chips button em{font-style:normal;font-size:11px;opacity:.75;margin-left:2px}
+.ct-toolrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 2px 14px}
+.ct-sort{display:flex;gap:4px;background:#e9edf4;border-radius:999px;padding:3px}
+.ct-sort button{border:none;background:none;padding:6px 14px;border-radius:999px;font-size:12.5px;color:#51607a;cursor:pointer;font-family:inherit;font-weight:500;min-height:32px}
+.ct-sort button.on{background:#fff;color:#0b3d91;font-weight:700;box-shadow:0 1px 4px rgba(15,40,90,.12)}
+.ct-dup{display:flex;align-items:center;gap:8px;font-size:12px;color:#51607a;cursor:pointer;user-select:none}
+.ct-dup i{width:34px;height:19px;border-radius:99px;background:#cfd7e6;position:relative;display:inline-block;transition:.2s;flex:none}
+.ct-dup i::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ct-dup i.on{background:#0b3d91}.ct-dup i.on::after{left:17px}
+.ct-loading{text-align:center;padding:30px;color:#7b88a0;font-size:13px}
+.ct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:6px}
+.ct-gh{display:flex;justify-content:space-between;align-items:baseline;margin:16px 4px 8px;color:#0b2e6f}.ct-gh b{font-size:15px}.ct-gh span{font-size:12px;color:#8a97ad}
+.ct-card{background:#fff;border:1px solid #e3e8f2;border-radius:18px;padding:16px 18px;box-shadow:0 2px 10px rgba(15,40,90,.05);min-width:0}
+.ct-card.faded{opacity:.62}
+.ct-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.ct-type{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px}.ct-type.sell{background:#fdecea;color:#c0392b}.ct-type.buy{background:#e6f6ee;color:#168a58}
+.ct-st{border:1px solid #d5dcea;background:#f3f6fb;color:#51607a;border-radius:99px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;min-height:32px}
+.ct-st.s-none{background:#fff;color:#98a4b8;border-style:dashed}.ct-st.s-sign{background:#eaf0fc;color:#0b3d91;border-color:#c9d8f3}.ct-st.s-dep{background:#fff3df;color:#c26a0a;border-color:#f3dcb4}.ct-st.s-paid{background:#e6f6ee;color:#168a58;border-color:#bfe5d1}.ct-st.s-done{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.ct-name{font-size:17px;font-weight:700;color:#1a2540;letter-spacing:-.4px;overflow-wrap:anywhere}.ct-nn{color:#98a4b8;font-weight:500;font-size:14px}
+.ct-item{font-size:13px;color:#51607a;margin-top:3px;overflow-wrap:anywhere}
+.ct-amt{font-size:22px;font-weight:700;color:#0b2e6f;letter-spacing:-.8px;margin-top:10px}.ct-amt small{font-size:11px;font-weight:400;color:#8a97ad;margin-left:6px}
+.ct-sub{font-size:12px;color:#7b88a0;margin-top:3px}
+.ct-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11.5px;color:#8a97ad;margin-top:10px}
+.ct-b{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:#eef1f6;color:#6b7a94}.ct-b.warn{background:#fff3df;color:#c26a0a}
+.ct-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid #eef1f6}
+.ct-actions button{border:1px solid #d5dcea;background:#fff;color:#33415c;border-radius:10px;font-size:13px;min-height:40px;cursor:pointer;font-family:inherit;font-weight:500}
+.ct-actions button.pri{background:#eaf0fc;border-color:#c9d8f3;color:#0b3d91;font-weight:700}.ct-actions button.del{color:#c0392b;border-color:#f2d4d0;background:#fff}
+.ct-menu{position:fixed;inset:0;background:rgba(10,30,70,.45);z-index:300;display:flex;align-items:flex-end;justify-content:center}
+.ct-sheet{background:#fff;width:100%;max-width:440px;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px}
+.ct-sheet-t{font-size:14px;font-weight:700;color:#0b2e6f;margin-bottom:4px}
+.ct-sheet button{border:1px solid #d5dcea;background:#fff;border-radius:12px;padding:13px;font-size:15px;color:#1a2540;cursor:pointer;font-family:inherit;min-height:48px}
+.ct-sheet button.on{background:#0b3d91;color:#fff;border-color:#0b3d91;font-weight:700}.ct-sheet button.cancel{border:none;color:#7b88a0}
+.ct-toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);background:#0b2e6f;color:#fff;padding:10px 18px;border-radius:99px;font-size:13px;opacity:0;transition:.3s;z-index:400;pointer-events:none}.ct-toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:600px){.ct-hero{padding:18px}.ct-hero-n{font-size:26px}.ct-hero-r{width:100%}.ct-kpi{flex:1;min-width:0}.ct-grid{grid-template-columns:1fr}.ct-h1{font-size:24px}}
+</style>
 <link rel="stylesheet" href="registration-ai.css?v=20261114-1">
 </head>
 <body>
@@ -287,37 +342,26 @@ button{font-family:inherit}.btn{min-height:46px;font-size:14px;border-radius:8px
 
 <!-- 계약서 목록 -->
 <div class="step" id="s6">
-  <div class="card" style="margin:16px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
-      <div style="font-size:16px;font-weight:700;color:var(--text)">계약서 목록</div>
-      <button onclick="newContract()" class="btn btn-outline" style="padding:7px 14px;font-size:12px">+ 새 계약서</button>
+  <div class="card ct-wrap">
+    <div class="ct-head">
+      <div><div class="ct-eyebrow">화천이티씨</div><div class="ct-h1">계약서 목록</div></div>
+      <button onclick="newContract()" class="ct-new">+ 새 계약서</button>
     </div>
-    <!-- 탭 -->
-    <div style="display:flex;gap:6px;margin-bottom:10px">
-      <button id="lt_all" onclick="setListTab('all')" class="btn" style="flex:1;padding:8px 0;font-size:13px;background:var(--accent);color:#fff;border:none">전체</button>
-      <button id="lt_sell" onclick="setListTab('sell')" class="btn btn-outline" style="flex:1;padding:8px 0;font-size:13px">매도</button>
-      <button id="lt_buy" onclick="setListTab('buy')" class="btn btn-outline" style="flex:1;padding:8px 0;font-size:13px">매수</button>
+    <div class="ct-seg" id="ct-tabs">
+      <button id="ct_tab_all" class="on" onclick="setListTab('all')">전체</button>
+      <button id="ct_tab_sell" onclick="setListTab('sell')">매도</button>
+      <button id="ct_tab_buy" onclick="setListTab('buy')">매수</button>
     </div>
-    <!-- 요약 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-      <div style="background:var(--accent2);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">총 계약서</div>
-        <div id="list-total-count" style="font-size:20px;font-weight:700;color:var(--text)">0건</div>
-      </div>
-      <div style="background:var(--accent2);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">이번달</div>
-        <div id="list-month-count" style="font-size:20px;font-weight:700;color:var(--accent)">0건</div>
-      </div>
-    </div>
+    <div id="ct-hero"></div>
     <input id="list_q" class="list-q" type="search" placeholder="🔍 회사명·품목·계약번호 검색" oninput="renderList()"/>
-    <!-- 필터 -->
-    <div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto">
-      <button id="lf_all" onclick="setListFilter('all')" style="padding:5px 14px;border-radius:20px;border:1.5px solid var(--accent);background:var(--accent2);color:var(--accent);cursor:pointer;font-size:12px;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;font-weight:500">전체</button>
-      <button id="lf_month" onclick="setListFilter('month')" style="padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;font-size:12px;white-space:nowrap;font-family:'Noto Sans KR',sans-serif">이번달</button>
-      <button id="lf_week" onclick="setListFilter('week')" style="padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;font-size:12px;white-space:nowrap;font-family:'Noto Sans KR',sans-serif">이번주</button>
+    <div class="ct-chips" id="ct-period">
+      <button id="ct_per_all" class="on" onclick="setListFilter('all')">전체 기간</button>
+      <button id="ct_per_month" onclick="setListFilter('month')">이번달</button>
+      <button id="ct_per_week" onclick="setListFilter('week')">이번주</button>
     </div>
-    <!-- 목록 -->
-    <div id="contract-list"></div>
+    <div id="ct-tools"></div>
+    <div id="ct-list"></div>
+    <div id="contract-list" style="display:none"></div>
     <div id="empty-list" style="text-align:center;padding:2rem 0;font-size:13px;color:var(--muted);display:none">저장된 계약서가 없습니다</div>
   </div>
 </div>
@@ -475,47 +519,6 @@ function kor(n){
 }
 
 // ── PDF 생성 ─────────────────────────────────────────────────────
-let listTab='all', listFilter='all';
-
-function setListTab(t){
-  listTab=t;
-  ['all','sell','buy'].forEach(v=>{
-    const el=document.getElementById('lt_'+v);
-    if(v===t){
-      el.style.background='var(--accent)'; el.style.color='#fff'; el.style.border='none';
-    } else {
-      el.style.background='#fff'; el.style.color='var(--text)'; el.style.border='1.5px solid var(--border)';
-    }
-  });
-  renderList();
-}
-
-function setListFilter(f){
-  listFilter=f;
-  ['all','month','week'].forEach(v=>{
-    const el=document.getElementById('lf_'+v);
-    if(v===f){
-      el.style.background='var(--accent2)'; el.style.color='var(--accent)'; el.style.borderColor='var(--accent)'; el.style.fontWeight='500';
-    } else {
-      el.style.background='#fff'; el.style.color='var(--muted)'; el.style.borderColor='var(--border)'; el.style.fontWeight='400';
-    }
-  });
-  renderList();
-}
-
-function switchTab(t){
-  window._curEditId=null; window._curDocNo='';
-  document.getElementById('tab-write').classList.toggle('active',t==='write');
-  document.getElementById('tab-list').classList.toggle('active',t==='list');
-  if(t==='list'){
-    showList();
-  } else {
-    document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
-    document.getElementById('s0').classList.add('active');
-    window.scrollTo(0,0);
-  }
-}
-
 function showList(){
   renderList();
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
@@ -542,7 +545,7 @@ function fsVal(v){
 async function restList(){
   let out=[],tok='';
   do{
-    const u=FS_BASE+'?pageSize=300&orderBy='+encodeURIComponent('savedAt desc')+'&'+['fileName','date','ctype','savedAt','docNo','formData'].map(f=>'mask.fieldPaths='+f).join('&')+(tok?'&pageToken='+encodeURIComponent(tok):'');
+    const u=FS_BASE+'?pageSize=300&orderBy='+encodeURIComponent('savedAt desc')+'&'+['fileName','date','ctype','savedAt','docNo','formData','status'].map(f=>'mask.fieldPaths='+f).join('&')+(tok?'&pageToken='+encodeURIComponent(tok):'');
     const r=await fetch(u); if(!r.ok) throw new Error('HTTP '+r.status);
     const j=await r.json();
     (j.documents||[]).forEach(d=>{const o={};const f=d.fields||{};for(const k in f)o[k]=fsVal(f[k]);o._id=d.name.split('/').pop();out.push(o);});
@@ -564,7 +567,7 @@ async function getContracts(){
 // 저장: 실패하면 오류를 던진다 (성공 안내는 저장이 확인된 뒤에만)
 async function saveContract(item,id){
   if(!window._db) throw new Error('데이터베이스에 연결되지 않았어요');
-  if(id){ await window._fbSetDoc(window._fbDoc(window._db,'contracts',id),item); return id; }
+  if(id){ const _old=(window._clist||[]).find(x=>x._id===id); if(_old&&_old.status&&item.status===undefined) item.status=_old.status; await window._fbSetDoc(window._fbDoc(window._db,'contracts',id),item); return id; }
   const ref=await window._fbAddDoc(window._fbCollection(window._db,'contracts'),item);
   return ref.id;
 }
@@ -585,52 +588,111 @@ function cTotals(fd){
   const dep=parseInt(String(fd.deposit||'').replace(/[^0-9]/g,''))||0;
   return {sum,vat,grand,dep,bal:grand-dep};
 }
+let listTab='all', listFilter='all', listStatus='all', listSort='new', hideDup=false;
+const CT_ST=[{k:'sign',sell:'계약 중',buy:'계약 중'},{k:'dep',sell:'계약금 입금',buy:'계약금 지급'},{k:'paid',sell:'잔금 입금',buy:'잔금 지급'},{k:'done',sell:'인도 완료',buy:'인수 완료'}];
+function ctStLabel(k,type){const s=CT_ST.find(x=>x.k===k);return s?(type==='buy'?s.buy:s.sell):'상태 미지정';}
+function ctWon(n){return Math.round(n).toLocaleString('ko-KR')+'원';}
+function ctK(n){const a=Math.abs(n);if(a>=1e8)return (a/1e8).toFixed(2).replace(/\.?0+$/,'')+'억';if(a>=1e4)return Math.round(a/1e4).toLocaleString('ko-KR')+'만';return Math.round(a).toLocaleString('ko-KR');}
+function setListTab(t){listTab=t;['all','sell','buy'].forEach(v=>document.getElementById('ct_tab_'+v).classList.toggle('on',v===t));renderList();}
+function setListFilter(f){listFilter=f;['all','month','week'].forEach(v=>document.getElementById('ct_per_'+v).classList.toggle('on',v===f));renderList();}
+function setListStatus(s){listStatus=s;renderList();}
+function setListSort(s){listSort=s;renderList();}
+function toggleHideDup(){hideDup=!hideDup;renderList();}
+function ctInfo(c){
+  const fd=c.formData||{};const t=cTotals(fd);const items=fd.items||[];const name=(fd.b_name||'').trim();
+  const it0=items[0]||{};const itemTxt=items.length?((it0.nm||'')+(it0.sp?' '+it0.sp:'')+(items.length>1?' 외 '+(items.length-1)+'건':'')):'';
+  const key=(c.ctype||fd.ctype||'')+'|'+name+'|'+(items.length?((it0.nm||'')+'~'+(it0.sp||'')+'~'+(it0.pr||'')):'');
+  const empty=!name&&!items.length;
+  return {c,fd,t,name,itemTxt,key,empty,type:c.ctype||fd.ctype||'sell'};
+}
+function ctOwed(x){
+  const s=x.c.status;if(x.t.grand<=0)return 0;
+  if(s==='sign')return x.t.grand;
+  if(s==='dep')return Math.max(0,x.t.grand-x.t.dep);
+  return 0;
+}
 async function renderList(){
-  const el=document.getElementById('contract-list'), empty=document.getElementById('empty-list');
-  el.innerHTML='<div style="text-align:center;padding:20px;color:#555;font-size:13px">불러오는 중...</div>';
+  const el=document.getElementById('ct-list'), empty=document.getElementById('empty-list');
+  if(!window._clist||!window._clist.length) el.innerHTML='<div class="ct-loading">불러오는 중...</div>';
   const allList=await getContracts();
   const now=new Date();
   const thisMonth=now.getFullYear()+'.'+String(now.getMonth()+1).padStart(2,'0');
   const weekAgo=new Date(now-7*24*60*60*1000);
-  const tabList=listTab==='all'?allList:allList.filter(c=>c.ctype===listTab);
-  document.getElementById('list-total-count').textContent=tabList.length+'건';
-  document.getElementById('list-month-count').textContent=tabList.filter(c=>c.date&&c.date.startsWith(thisMonth)).length+'건';
+  const infos=allList.map(ctInfo);
+  /* 중복 의심: 같은 종류·상대방·품목·금액이면 가장 최근 것만 남기고 나머지는 이전 저장본 */
+  const seen={},WIN=14*24*3600*1000;infos.slice().sort((a,b)=>(b.c.savedAt||0)-(a.c.savedAt||0)).forEach(x=>{if(x.empty)return;const ts=x.c.savedAt||0;if(seen[x.key]!==undefined&&(seen[x.key]-ts)<=WIN){x.dup=true;}else seen[x.key]=ts;});
+  const tabList=infos.filter(x=>listTab==='all'||x.type===listTab);
   const q=((document.getElementById('list_q')||{}).value||'').trim().toLowerCase();
-  const list=tabList.filter(c=>{
-    if(listFilter==='month'&&!(c.date&&c.date.startsWith(thisMonth))) return false;
-    if(listFilter==='week'&&!(c.savedAt&&new Date(c.savedAt)>=weekAgo)) return false;
-    if(q){
-      const fd=c.formData||{};
-      const hay=[c.fileName,c.docNo,fd.b_name,fd.b_reg].concat((fd.items||[]).map(i=>(i.nm||'')+' '+(i.sp||''))).join(' ').toLowerCase();
-      if(!hay.includes(q)) return false;
-    }
+  const base=tabList.filter(x=>{
+    if(listFilter==='month'&&!(x.c.date&&x.c.date.startsWith(thisMonth)))return false;
+    if(listFilter==='week'&&!(x.c.savedAt&&new Date(x.c.savedAt)>=weekAgo))return false;
+    if(q){const fd=x.fd;const hay=[x.c.fileName,x.c.docNo,fd.b_name,fd.b_reg].concat((fd.items||[]).map(i=>(i.nm||'')+' '+(i.sp||''))).join(' ').toLowerCase();if(!hay.includes(q))return false;}
     return true;
   });
-  if(list.length===0){el.innerHTML='';empty.style.display='block';empty.textContent=q?'검색 결과가 없습니다':'저장된 계약서가 없습니다';return;}
+  const dupCnt=base.filter(x=>x.dup).length, emptyCnt=base.filter(x=>x.empty).length;
+  const stCnt={all:base.length,none:0,sign:0,dep:0,paid:0,done:0};
+  base.forEach(x=>{stCnt[x.c.status||'none']=(stCnt[x.c.status||'none']||0)+1;});
+  let shown=base.filter(x=>listStatus==='all'||(listStatus==='none'?!x.c.status:x.c.status===listStatus));
+  if(hideDup) shown=shown.filter(x=>!x.dup&&!x.empty);
+  const valid=shown.filter(x=>!x.dup&&!x.empty);
+  /* 상단 요약 */
+  const sum=a=>a.reduce((s,x)=>s+x.t.grand,0);
+  const sellV=valid.filter(x=>x.type==='sell'),buyV=valid.filter(x=>x.type==='buy');
+  const recv=sellV.reduce((s,x)=>s+ctOwed(x),0), pay=buyV.reduce((s,x)=>s+ctOwed(x),0);
+  const noSt=valid.filter(x=>!x.c.status).length;
+  document.getElementById('ct-hero').innerHTML='<div class="ct-hero"><div><div class="ct-hero-l">총 계약금액 <small>VAT 포함 · 중복 제외</small></div><div class="ct-hero-n">'+ctWon(sum(valid))+'</div>'
+    +'<div class="ct-hero-s"><span>계약 <b>'+valid.length+'건</b></span><span>매도 <b>'+ctK(sum(sellV))+'원</b> ('+sellV.length+')</span><span>매수 <b>'+ctK(sum(buyV))+'원</b> ('+buyV.length+')</span></div></div>'
+    +'<div class="ct-hero-r"><div class="ct-kpi"><span>받을 잔금</span><b>'+(recv?ctK(recv)+'원':'-')+'</b></div><div class="ct-kpi"><span>줄 잔금</span><b>'+(pay?ctK(pay)+'원':'-')+'</b></div><div class="ct-kpi"><span>상태 미지정</span><b class="'+(noSt?'dn':'up')+'">'+noSt+'건</b></div></div></div>';
+  /* 도구: 상태 칩, 정렬, 중복 */
+  const stChips=[['all','전체 상태'],['none','미지정'],['sign','계약 중'],['dep','계약금'],['paid','잔금'],['done','완료']].map(a=>'<button class="'+(listStatus===a[0]?'on':'')+'" onclick="setListStatus(\''+a[0]+'\')">'+a[1]+(stCnt[a[0]]?' <em>'+stCnt[a[0]]+'</em>':'')+'</button>').join('');
+  const sorts=[['new','최신순'],['amt','금액순'],['name','거래처별']].map(a=>'<button class="'+(listSort===a[0]?'on':'')+'" onclick="setListSort(\''+a[0]+'\')">'+a[1]+'</button>').join('');
+  document.getElementById('ct-tools').innerHTML='<div class="ct-chips">'+stChips+'</div><div class="ct-toolrow"><div class="ct-sort">'+sorts+'</div>'+((dupCnt||emptyCnt)?'<label class="ct-dup" onclick="toggleHideDup()"><i class="'+(hideDup?'on':'')+'"></i>이전 저장본·빈 계약서 숨기기 ('+(dupCnt+emptyCnt)+')</label>':'')+'</div>';
+  if(shown.length===0){el.innerHTML='';empty.style.display='block';empty.textContent=q?'검색 결과가 없습니다':'저장된 계약서가 없습니다';return;}
   empty.style.display='none';
+  const arr=shown.slice();
+  if(listSort==='amt')arr.sort((a,b)=>b.t.grand-a.t.grand);
+  else if(listSort==='name')arr.sort((a,b)=>(a.name||'~').localeCompare(b.name||'~','ko')||(b.c.savedAt||0)-(a.c.savedAt||0));
+  else arr.sort((a,b)=>(b.c.savedAt||0)-(a.c.savedAt||0));
   const isMob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  el.innerHTML=list.map(c=>{
-    const typeLabel=c.ctype==='sell'?'매도':'매수';
-    const typeColor=c.ctype==='sell'?'#c0392b':'#1a6b3c';
-    const typeBg=c.ctype==='sell'?'#fdecea':'#eefaf3';
-    return `<div style="padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.04)">
-      <div style="display:flex;align-items:center;gap:10px">
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:3px">
-          <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:${typeBg};color:${typeColor};white-space:nowrap">${typeLabel}</span>
-          <span style="font-size:13px;font-weight:500;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all;line-height:1.35">${escH(c.fileName)}</span>
-        </div>
-        <div style="font-size:11px;color:var(--muted)">${escH(c.date||'')} ${c.docNo?'<span class="no-pill">'+escH(c.docNo)+'</span>':''}</div>
-      </div>
-      <div style="display:flex;gap:5px;flex-shrink:0">
-        <button onclick="loadAndEdit('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">수정</button>
-        <button onclick="viewContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">${isMob?'저장':'PDF'}</button>
-        <button onclick="deleteContract('${c._id}')" style="padding:6px 10px;border-radius:7px;border:1.5px solid #fdecea;background:#fff;color:#c0392b;cursor:pointer;font-size:11px;font-family:'Noto Sans KR',sans-serif">삭제</button>
-      </div></div>
-    </div>`;
-  }).join('');
+  const card=x=>{
+    const c=x.c,sell=x.type==='sell';
+    const badges=(x.dup?'<span class="ct-b warn">이전 저장본</span>':'')+(x.empty?'<span class="ct-b warn">내용 없음</span>':'')+((!x.empty&&x.t.grand>0&&x.t.dep===0)?'<span class="ct-b">계약금 없음</span>':'');
+    return '<div class="ct-card'+((x.dup||x.empty)?' faded':'')+'"><div class="ct-top"><span class="ct-type '+(sell?'sell':'buy')+'">'+(sell?'매도':'매수')+'</span><button class="ct-st s-'+(c.status||'none')+'" onclick="ctStatusMenu(\''+c._id+'\')">'+ctStLabel(c.status,x.type)+' ▾</button></div>'
+      +'<div class="ct-name">'+(escH(x.name)||'<span class="ct-nn">거래처 미입력</span>')+'</div>'
+      +(x.itemTxt?'<div class="ct-item">'+escH(x.itemTxt)+'</div>':'')
+      +(x.t.grand>0?'<div class="ct-amt">'+ctWon(x.t.grand)+'<small>VAT 포함</small></div><div class="ct-sub">계약금 '+(x.t.dep?ctWon(x.t.dep):'없음')+' · 잔금 '+ctWon(x.t.bal)+'</div>':'<div class="ct-sub">금액 정보 없음</div>')
+      +'<div class="ct-meta"><span>'+escH(c.date||'')+'</span>'+(c.docNo?'<span class="no-pill">'+escH(c.docNo)+'</span>':'')+badges+'</div>'
+      +'<div class="ct-actions"><button onclick="loadAndEdit(\''+c._id+'\')">수정</button><button class="pri" onclick="viewContract(\''+c._id+'\')">'+(isMob?'저장':'PDF')+'</button><button onclick="copyContract(\''+c._id+'\')">복사</button><button class="del" onclick="deleteContract(\''+c._id+'\')">삭제</button></div></div>';
+  };
+  let out='';
+  if(listSort==='name'){
+    const groups=[];arr.forEach(x=>{const k=x.name||'(거래처 미입력)';let g=groups[groups.length-1];if(!g||g.k!==k){g={k,list:[]};groups.push(g);}g.list.push(x);});
+    out=groups.map(g=>'<div class="ct-gh"><b>'+escH(g.k)+'</b><span>'+g.list.length+'건 · '+ctK(sum(g.list.filter(x=>!x.dup&&!x.empty)))+'원</span></div><div class="ct-grid">'+g.list.map(card).join('')+'</div>').join('');
+  } else out='<div class="ct-grid">'+arr.map(card).join('')+'</div>';
+  el.innerHTML=out;
 }
-
+function copyContract(id){
+  if(!confirm('이 계약서 내용으로 새 계약서를 만들까요?\n(원본은 그대로 두고 새 계약서로 저장돼요)'))return;
+  loadAndEdit(id).then(()=>{window._curEditId=null;window._curDocNo='';window._lastSavedSig=null;const d=document.getElementById('c_date');if(d)d.value=todayISO();});
+}
+function ctToast(m){let t=document.getElementById('ct-toast');if(!t){t=document.createElement('div');t.id='ct-toast';t.className='ct-toast';document.body.appendChild(t);}t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+function ctStatusMenu(id){
+  const c=(window._clist||[]).find(x=>x._id===id);if(!c)return;const type=c.ctype||(c.formData&&c.formData.ctype)||'sell';
+  let m=document.getElementById('ct-menu');if(m)m.remove();
+  m=document.createElement('div');m.id='ct-menu';m.className='ct-menu';
+  m.innerHTML='<div class="ct-sheet"><div class="ct-sheet-t">진행 상태</div>'+CT_ST.map(s=>'<button class="'+(c.status===s.k?'on':'')+'" onclick="ctSetStatus(\''+id+'\',\''+s.k+'\')">'+(type==='buy'?s.buy:s.sell)+'</button>').join('')+'<button class="'+(!c.status?'on':'')+'" onclick="ctSetStatus(\''+id+'\',\'\')">상태 미지정</button><button class="cancel" onclick="document.getElementById(\'ct-menu\').remove()">닫기</button></div>';
+  m.addEventListener('click',e=>{if(e.target===m)m.remove();});
+  document.body.appendChild(m);
+}
+async function ctSetStatus(id,k){
+  const m=document.getElementById('ct-menu');if(m)m.remove();
+  try{
+    await window._fbSetDoc(window._fbDoc(window._db,'contracts',id),{status:k},{merge:true});
+    const c=(window._clist||[]).find(x=>x._id===id);if(c)c.status=k;
+    ctToast(k?'상태를 바꿨어요':'상태를 지웠어요');
+    renderList();
+  }catch(e){console.error(e);alert('상태 저장에 실패했어요. 인터넷 연결을 확인해 주세요.');}
+}
 async function viewContract(id){
   const meta=(window._clist||[]).find(x=>x._id===id)||{};
   let c;
