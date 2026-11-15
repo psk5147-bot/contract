@@ -873,9 +873,10 @@ async function renderList(){
   const sellV=valid.filter(x=>x.type==='sell'),buyV=valid.filter(x=>x.type==='buy');
   const recv=sellV.reduce((s,x)=>s+ctOwed(x),0), pay=buyV.reduce((s,x)=>s+ctOwed(x),0);
   const noSt=valid.filter(x=>!x.c.status).length;
+  const monthV=valid.filter(x=>x.c.date&&x.c.date.startsWith(thisMonth)), ingV=valid.filter(x=>['sign','dep','paid'].includes(x.c.status));
   document.getElementById('ct-hero').innerHTML='<div class="ct-hero"><div><div class="ct-hero-l">총 계약금액 <small>VAT 포함 · 중복 제외</small></div><div class="ct-hero-n">'+ctWon(sum(valid))+'</div>'
     +'<div class="ct-hero-s"><span>계약 <b>'+valid.length+'건</b></span><span>매도 <b>'+ctK(sum(sellV))+'원</b> ('+sellV.length+')</span><span>매수 <b>'+ctK(sum(buyV))+'원</b> ('+buyV.length+')</span></div></div>'
-    +'<div class="ct-hero-r"><div class="ct-kpi"><span>받을 잔금</span><b>'+(recv?ctK(recv)+'원':'-')+'</b></div><div class="ct-kpi"><span>줄 잔금</span><b>'+(pay?ctK(pay)+'원':'-')+'</b></div><div class="ct-kpi"><span>상태 미지정</span><b class="'+(noSt?'dn':'up')+'">'+noSt+'건</b></div></div></div>';
+    +'<div class="ct-hero-r"><div class="ct-kpi"><span>이번 달 계약</span><b>'+(monthV.length?monthV.length+'건 · '+ctK(sum(monthV))+'원':'-')+'</b></div><div class="ct-kpi"><span>진행 중</span><b>'+(ingV.length?ingV.length+'건':'-')+'</b></div><div class="ct-kpi"><span>상태 미지정</span><b class="'+(noSt?'dn':'up')+'">'+noSt+'건</b></div></div></div>';
   /* 도구: 상태 칩, 정렬, 중복 */
   const stChips=[['all','전체 상태'],['none','미지정'],['sign','계약 중'],['dep','계약금'],['paid','잔금'],['done','완료']].map(a=>'<button class="'+(listStatus===a[0]?'on':'')+'" onclick="setListStatus(\''+a[0]+'\')">'+a[1]+(stCnt[a[0]]?' <em>'+stCnt[a[0]]+'</em>':'')+'</button>').join('');
   const sorts=[['new','최신순'],['amt','금액순'],['name','거래처별']].map(a=>'<button class="'+(listSort===a[0]?'on':'')+'" onclick="setListSort(\''+a[0]+'\')">'+a[1]+'</button>').join('');
